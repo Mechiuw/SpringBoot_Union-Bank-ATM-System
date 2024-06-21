@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class ATMRequest {
-    private String id;
     private String location;
     private Branch branch;
 }

@@ -1,19 +1,20 @@
 package com.mcsoftware.atm.model.dto.request;
 
-import com.mcsoftware.atm.model.entity.User;
+import com.mcsoftware.atm.model.entity.Bank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class AccountRequest {
-    private String accountNumber;
-    private BigDecimal balance;
-    private User user;
+public class BranchRequest {
+    private String name;
+    private String location;
+    private Bank bank;
+    private List<ATMRequest> atmList;
 }

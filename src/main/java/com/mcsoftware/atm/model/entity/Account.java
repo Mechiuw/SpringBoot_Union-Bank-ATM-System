@@ -1,10 +1,13 @@
 package com.mcsoftware.atm.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,4 +31,9 @@ public class Account {
     @ManyToOne
     @JsonBackReference
     private User user;
+
+    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private List<Transaction> transactionList;
 }

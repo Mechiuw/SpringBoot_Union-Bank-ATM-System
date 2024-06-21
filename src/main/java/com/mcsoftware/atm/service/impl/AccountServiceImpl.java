@@ -1,4 +1,6 @@
 package com.mcsoftware.atm.service.impl;
 
-public class AccountServiceImpl {
+import com.mcsoftware.atm.service.AccountService;
+
+public class AccountServiceImpl implements AccountService {
 }

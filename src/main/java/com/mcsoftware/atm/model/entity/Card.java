@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "t_transaction")
+@Table(name = "m_card")
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

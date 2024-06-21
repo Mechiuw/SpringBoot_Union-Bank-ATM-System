@@ -22,6 +22,12 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @JoinColumn(name = "atm_id",referencedColumnName = "id")
+    @ManyToOne
+    @JsonBackReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private ATM atm;
+
     @Column(name = "transaction_date",nullable = false)
     private LocalDateTime transactionDate;
 

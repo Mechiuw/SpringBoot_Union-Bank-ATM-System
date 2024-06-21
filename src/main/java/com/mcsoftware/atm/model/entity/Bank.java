@@ -26,4 +26,9 @@ public class Bank {
     @JsonManagedReference
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Branch> branches;
+
+    @OneToMany(mappedBy = "bank",cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private List<Account> accountList;
 }

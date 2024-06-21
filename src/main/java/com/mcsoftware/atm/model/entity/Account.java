@@ -24,7 +24,7 @@ public class Account {
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 
-    @JoinColumn(referencedColumnName = "id")
+    @JoinColumn(referencedColumnName = "id",name = "user_id")
     @ManyToOne
     @JsonBackReference
     private User user;

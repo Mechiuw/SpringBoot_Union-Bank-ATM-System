@@ -1,6 +1,7 @@
 package com.mcsoftware.atm.model.dto.request;
 
 import com.mcsoftware.atm.constant.TransactionType;
+import com.mcsoftware.atm.model.entity.ATM;
 import com.mcsoftware.atm.model.entity.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class TransactionRequest {
+
+    private ATM atm;
     private LocalDateTime localDateTime;
     private BigDecimal amount;
     private TransactionType type;

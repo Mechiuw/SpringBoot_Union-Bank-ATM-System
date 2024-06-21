@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @Builder(toBuilder = true)
 public class TransactionResponse {
     private String id;
+    private String atm;
     private String localDateTime;
     private BigDecimal amount;
     private String type;

@@ -15,4 +15,5 @@ import java.util.List;
 public class BankRequest {
     private String name;
     private List<BranchRequest> branchList;
+    private List<AccountRequest> accountList;
 }

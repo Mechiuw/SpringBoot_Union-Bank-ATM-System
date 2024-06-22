@@ -258,7 +258,32 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse withdrawBalance(String id, BigDecimal withdraw) {
-        return null;
+        try{
+            Account account = accountRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found with id: " + id));
+
+            if(account.getBalance() != null){
+                account.setBalance(BigDecimal.ZERO);
+            }
+
+            if(account.getBalance() != null){
+                account.setBalance(account.getBalance().subtract(withdraw));
+            }
+
+            Account withdrawalAccount = accountRepository.saveAndFlush(account);
+
+            return AccountResponse.builder()
+                    .id(withdrawalAccount.getId())
+                    .accountNumber(withdrawalAccount.getAccountNumber())
+                    .balance(withdrawalAccount.getBalance())
+                    .build();
+        } catch (NoSuchElementException e){
+            System.err.println("Not found any account with id: " + id + " || with error: " + e.getMessage());
+            throw e;
+        } catch (Exception e){
+            System.err.println("Exception caught: " + e.getMessage());
+            throw e;
+        }
     }
 
     @Override

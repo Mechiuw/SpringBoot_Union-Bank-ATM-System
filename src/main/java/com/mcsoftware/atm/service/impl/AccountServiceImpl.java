@@ -131,7 +131,7 @@ public class AccountServiceImpl implements AccountService {
             account.setAccountNumber(accountRequest.getAccountNumber());
             account.setUser(accountRequest.getUser());
 
-            Account updatedAccount = accountRepository.save(account);
+            Account updatedAccount = accountRepository.saveAndFlush(account);
             checkAccountChanges(updatedAccount, accountRequest);
 
             return AccountResponse.builder()
@@ -192,7 +192,7 @@ public class AccountServiceImpl implements AccountService {
             account.setBalance(BigDecimal.ZERO);
             account.setUser(null);
             account.setTransactionList(Collections.emptyList());
-            Account saveChanges = accountRepository.save(account);
+            Account saveChanges = accountRepository.saveAndFlush(account);
             return AccountResponse.builder()
                     .id(saveChanges.getId())
                     .accountNumber(saveChanges.getAccountNumber())
@@ -233,18 +233,22 @@ public class AccountServiceImpl implements AccountService {
             Account account = accountRepository.findById(id)
                     .orElseThrow(() -> new NoSuchElementException("not found account with id " + id));
 
-            if(account.getBalance() != null) {
-                account.setBalance(account.getBalance().multiply(deposit));
+            if(account.getBalance() != null){
+                account.setBalance(BigDecimal.ZERO);
             }
 
+            if(account.getBalance() != null) {
+                account.setBalance(account.getBalance().add(deposit));
+            }
+            Account updatedBalance = accountRepository.saveAndFlush(account);
 
             return AccountResponse.builder()
-                    .id(account.getId())
-                    .accountNumber(account.getId())
-                    .balance()
+                    .id(updatedBalance.getId())
+                    .accountNumber(updatedBalance.getAccountNumber())
+                    .balance(updatedBalance.getBalance())
                     .build();
         } catch (NoSuchElementException e){
-            System.err.println("no such element: " + e.getMessage());
+            System.err.println("Account not found: " + e.getMessage());
             throw e;
         } catch (Exception e){
             System.err.println("Exceptions caught: " + e.getCause());

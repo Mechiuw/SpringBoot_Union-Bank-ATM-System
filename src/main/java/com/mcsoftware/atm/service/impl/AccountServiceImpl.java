@@ -71,7 +71,31 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse getById(String id) {
-        return null;
+        try {
+            Account account = accountRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException(String.format("not found account with id : %s", id)));
+
+            String userId = account.getUser().getId();
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NoSuchElementException(String.format("not found user with id : %s", userId)));
+
+            return AccountResponse.builder()
+                    .id(account.getId())
+                    .accountNumber(account.getAccountNumber())
+                    .userId(user.getId())
+                    .balance(account.getBalance())
+                    .build();
+        } catch (NoSuchElementException e) {
+            System.err.printf("Not found specific user associated with the account : %s%n",e.getMessage());
+            return AccountResponse.builder()
+                    .id("account id not found")
+                    .userId("user not found")
+                    .build();
+        } catch (Exception e){
+            System.err.printf("Exception handled while retrieving account : %s%n",e.getMessage());
+            return null;
+        }
     }
 
     @Override

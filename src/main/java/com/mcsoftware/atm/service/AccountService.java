@@ -19,5 +19,9 @@ public interface AccountService {
     AccountResponse withdrawBalance(String id, BigDecimal withdraw);
     AccountResponse transferBalance(String accountId,String transferId, BigDecimal transfer);
 
+    //TODO VALIDATIONS LAYER
     void recievedTransfer(Account account);
+    void minimumDeposit(BigDecimal balance);
+    void checkAccountChanges(Account account,AccountRequest accountRequest);
+    void checkAccountDeletion(String accId,Account account);
 }

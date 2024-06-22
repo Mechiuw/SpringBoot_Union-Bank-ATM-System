@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -20,14 +21,14 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
 
-    public void minimumDeposit(BigDecimal currentBalance) throws IllegalArgumentException {
+    public void minimumDeposit(BigDecimal currentBalance) {
         if(currentBalance.compareTo(new BigDecimal("500000")) < 0){
             throw new IllegalArgumentException("[WARNING] DEPOSIT BALANCE MUST BE LEAST 500000");
         }
 
     };
     @Override
-    public AccountResponse create(AccountRequest accountRequest) throws RuntimeException {
+    public AccountResponse create(AccountRequest accountRequest) {
 
         //validates minimum deposit account
         minimumDeposit(accountRequest.getBalance());
@@ -42,7 +43,6 @@ public class AccountServiceImpl implements AccountService {
                 .accountNumber(accountRequest.getAccountNumber())
                 .balance(accountRequest.getBalance())
                 .user(user)
-                .balance(accountRequest.getBalance())
                 .build();
         Account savedAccount = accountRepository.save(account);
 
@@ -56,7 +56,17 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<Account> getAll() {
-        return null;
+        try {
+            List<Account> accountList = accountRepository.findAll();
+            if(!accountList.isEmpty()){
+                return accountList;
+            } else {
+                throw new NoSuchElementException("not found any account on list");
+            }
+        } catch (Exception e){
+            System.err.printf("Exception while retrieving accounts : %s%n",e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     @Override

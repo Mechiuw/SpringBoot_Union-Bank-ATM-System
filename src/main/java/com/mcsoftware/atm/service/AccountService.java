@@ -17,7 +17,6 @@ public interface AccountService {
     AccountResponse checkCurrentBalance(String id);
     AccountResponse depositBalance(String id, BigDecimal deposit);
     AccountResponse withdrawBalance(String id, BigDecimal withdraw);
-    AccountResponse transferBalance(String id, BigDecimal transfer);
-    AccountResponse transactionHistory(String id);
+    AccountResponse transferBalance(String accountId,String transferId, BigDecimal transfer);
 
 }

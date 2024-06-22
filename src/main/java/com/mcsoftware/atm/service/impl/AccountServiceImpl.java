@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -338,7 +339,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void recievedTransfer(Account account) {
-        if(account.getBalance().)
+    public void recievedTransfer(Account receiver) {
+        logTransferReceipt(receiver);
     }
+
+    private void logTransferReceipt(Account receiver) {
+        System.out.println("Transfer received by account ID: " + receiver.getId() + " at " + LocalDateTime.now());
+        System.out.println("New balance: " + receiver.getBalance());
+    }
+
+
 }

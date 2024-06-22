@@ -206,7 +206,24 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse checkCurrentBalance(String id) {
-        return null;
+        try {
+            Account account = accountRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException(String.format("not found any account with id : %s", id)));
+            assert account != null : "no account scanned";
+            return AccountResponse.builder()
+                    .accountNumber(account.getId())
+                    .balance(account.getBalance())
+                    .build();
+        } catch (NoSuchElementException e){
+            System.err.println("not found anything");
+            return AccountResponse.builder()
+                    .accountNumber("not found any account number")
+                    .balance(BigDecimal.ZERO)
+                    .build();
+        } catch (Exception e){
+            System.err.printf("Exception caught: %s%n",e.getMessage());
+            throw e;
+        }
     }
 
     @Override

@@ -27,6 +27,18 @@ public class AccountServiceImpl implements AccountService {
         }
 
     };
+
+    public void checkAccountChanges(Account account,AccountRequest accountRequest){
+        String accNumber = accountRequest.getAccountNumber();
+        String accUserId = accountRequest.getUser().getId();
+        if(!account.getAccountNumber().equals(accNumber)){
+            throw new IllegalArgumentException(String.format("not the same updated changes of %s",accNumber));
+        }
+        if(!account.getUser().getId().equals(accUserId)){
+            throw new IllegalArgumentException(String.format("not the same updated changes of %s",accUserId));
+        }
+    }
+
     @Override
     public AccountResponse create(AccountRequest accountRequest) {
 
@@ -79,7 +91,6 @@ public class AccountServiceImpl implements AccountService {
 
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new NoSuchElementException(String.format("not found user with id : %s", userId)));
-
             return AccountResponse.builder()
                     .id(account.getId())
                     .accountNumber(account.getAccountNumber())
@@ -92,7 +103,8 @@ public class AccountServiceImpl implements AccountService {
                     .id("account id not found")
                     .userId("user not found")
                     .build();
-        } catch (Exception e){
+        }
+        catch (Exception e){
             System.err.printf("Exception handled while retrieving account : %s%n",e.getMessage());
             return null;
         }
@@ -100,7 +112,41 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse update(String id, AccountRequest accountRequest) {
-        return null;
+        try {
+            Account account = accountRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException(String.format("not found account with id : %s", id)));
+            account.setAccountNumber(accountRequest.getAccountNumber());
+            account.setUser(accountRequest.getUser());
+
+            Account updatedAccount = accountRepository.save(account);
+            checkAccountChanges(updatedAccount, accountRequest);
+
+            return AccountResponse.builder()
+                    .id(updatedAccount.getId())
+                    .accountNumber(updatedAccount.getAccountNumber())
+                    .userId(updatedAccount.getUser().getId())
+                    .balance(updatedAccount.getBalance())
+                    .build();
+        } catch (NoSuchElementException e){
+            System.err.printf("No Such Element of %s%n",e.getMessage());
+            return AccountResponse.builder()
+                    .id("not found")
+                    .accountNumber("not found")
+                    .userId("not found")
+                    .balance(BigDecimal.ZERO)
+                    .build();
+        } catch (IllegalArgumentException e){
+            System.err.printf("Validations error associated with the account : %s%n",e.getMessage());
+            return AccountResponse.builder()
+                    .id("validation error")
+                    .accountNumber("validation error")
+                    .userId("validation error")
+                    .balance(BigDecimal.ZERO)
+                    .build();
+        } catch (Exception e) {
+            System.err.printf("Exception called %s%n",e.getMessage());
+            return null;
+        }
     }
 
     @Override

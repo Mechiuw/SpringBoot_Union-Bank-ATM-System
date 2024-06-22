@@ -183,7 +183,25 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse softDeleteAccount(String id) {
+        try {
+            Account account = accountRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException(String.format("not found account: %s",id)));
 
+            account.setAccountNumber("DELETED");
+            account.setBalance(BigDecimal.ZERO);
+            account.setUser(null);
+            account.setTransactionList(Collections.emptyList());
+            Account saveChanges = accountRepository.save(account);
+            return AccountResponse.builder()
+                    .id(saveChanges.getId())
+                    .accountNumber(saveChanges.getAccountNumber())
+                    .userId(saveChanges.getUser() != null ? saveChanges.getUser().getId() : null)
+                    .balance(saveChanges.getBalance())
+                    .build();
+        } catch (Exception e){
+            System.err.printf("Exception caught: %s%n",e.getMessage());
+            throw e;
+        }
     }
 
     @Override

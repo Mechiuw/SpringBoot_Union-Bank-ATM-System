@@ -10,7 +10,6 @@ import com.mcsoftware.atm.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -288,6 +287,58 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse transferBalance(String accountId, String transferId, BigDecimal transfer) {
-        return null;
+        try {
+            Account sender = accountRepository.findById(accountId)
+                    .orElseThrow(() -> new NoSuchElementException("not found sender account with id " + accountId));
+            Account receiver = accountRepository.findById(transferId)
+                    .orElseThrow(() -> new NoSuchElementException("not found receiver account with id " + transferId));
+
+            BigDecimal adminFee = new BigDecimal("3000");
+            BigDecimal minimumTransfer = new BigDecimal("5000");
+
+            if (sender.getBalance() != null && receiver.getBalance() != null) {
+                if (transfer.compareTo(minimumTransfer) >= 0) {
+                    BigDecimal totalDebit = transfer.add(adminFee);
+
+                    // Check if sender has sufficient balance
+                    if (sender.getBalance().compareTo(totalDebit) >= 0) {
+                        // Perform the balance transfer
+                        sender.setBalance(sender.getBalance().subtract(totalDebit));
+                        receiver.setBalance(receiver.getBalance().add(transfer));
+
+                        // Save the updated accounts
+                        Account updatedSender = accountRepository.saveAndFlush(sender);
+                        Account updatedReceiver = accountRepository.saveAndFlush(receiver);
+
+                        recievedTransfer(updatedReceiver);
+
+                        // Return response for the sender account
+                        return AccountResponse.builder()
+                                .id(updatedSender.getId())
+                                .accountNumber(updatedSender.getAccountNumber())
+                                .balance(updatedSender.getBalance())
+                                .userId(updatedSender.getUser().getId())
+                                .build();
+                    } else {
+                        throw new IllegalArgumentException("Sender has insufficient balance");
+                    }
+                } else {
+                    throw new IllegalArgumentException("Transfer amount must be greater than or equal to " + minimumTransfer);
+                }
+            } else {
+                throw new IllegalStateException("One of the accounts has a null balance");
+            }
+        } catch (NoSuchElementException e){
+            System.err.println("Not found account: " +e.getMessage());
+            throw e;
+        } catch (Exception e){
+            System.err.println("Exception caught: " +e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public void recievedTransfer(Account account) {
+        if(account.getBalance().)
     }
 }

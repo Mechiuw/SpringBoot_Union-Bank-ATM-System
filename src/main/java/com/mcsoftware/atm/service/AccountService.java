@@ -19,4 +19,5 @@ public interface AccountService {
     AccountResponse withdrawBalance(String id, BigDecimal withdraw);
     AccountResponse transferBalance(String accountId,String transferId, BigDecimal transfer);
 
+    void recievedTransfer(Account account);
 }

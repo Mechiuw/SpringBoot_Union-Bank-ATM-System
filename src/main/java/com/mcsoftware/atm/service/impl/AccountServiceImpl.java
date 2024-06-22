@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,15 @@ public class AccountServiceImpl implements AccountService {
             throw new IllegalArgumentException(String.format("not the same updated changes of %s",accUserId));
         }
     }
+
+    public void checkAccountDeletion(String accId, Account account) {
+        Optional<Account> checkPresent = accountRepository.findById(accId);
+        if (checkPresent.isPresent()) {
+            accountRepository.delete(account);
+            throw new IllegalArgumentException("Account was not properly deleted the first time, attempted deletion again.");
+        }
+    }
+
 
     @Override
     public AccountResponse create(AccountRequest accountRequest) {
@@ -101,7 +111,9 @@ public class AccountServiceImpl implements AccountService {
             System.err.printf("Not found specific user associated with the account : %s%n",e.getMessage());
             return AccountResponse.builder()
                     .id("account id not found")
+                    .accountNumber("account number not found")
                     .userId("user not found")
+                    .balance(BigDecimal.ZERO)
                     .build();
         }
         catch (Exception e){
@@ -151,12 +163,27 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void delete(String id) {
+        try {
+            Account account = accountRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException(String.format("not found account with id : %s", id)));
+            accountRepository.delete(account);
+            checkAccountDeletion(id, account);
 
+        } catch (NoSuchElementException e){
+            System.err.printf("No such element: %s%n",e.getMessage());
+            throw e;
+        } catch (IllegalArgumentException e){
+            System.err.printf("Improper Deletion: %s%n",e.getMessage());
+            throw e;
+        } catch (Exception e){
+            System.err.printf("Exception caught: %s%n",e.getMessage());
+            throw e;
+        }
     }
 
     @Override
-    public AccountResponse softDeleteAccount(String id, AccountRequest accountRequest) {
-        return null;
+    public AccountResponse softDeleteAccount(String id) {
+
     }
 
     @Override

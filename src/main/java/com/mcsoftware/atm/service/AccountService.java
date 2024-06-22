@@ -13,7 +13,7 @@ public interface AccountService {
     AccountResponse getById(String id);
     AccountResponse update(String id,AccountRequest accountRequest);
     void delete(String id);
-    AccountResponse softDeleteAccount(String id, AccountRequest accountRequest);
+    AccountResponse softDeleteAccount(String id);
     AccountResponse checkCurrentBalance(String id);
     AccountResponse depositBalance(String id, BigDecimal deposit);
     AccountResponse withdrawBalance(String id, BigDecimal withdraw);

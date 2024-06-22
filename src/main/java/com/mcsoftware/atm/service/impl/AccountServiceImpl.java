@@ -301,19 +301,15 @@ public class AccountServiceImpl implements AccountService {
                 if (transfer.compareTo(minimumTransfer) >= 0) {
                     BigDecimal totalDebit = transfer.add(adminFee);
 
-                    // Check if sender has sufficient balance
                     if (sender.getBalance().compareTo(totalDebit) >= 0) {
-                        // Perform the balance transfer
                         sender.setBalance(sender.getBalance().subtract(totalDebit));
                         receiver.setBalance(receiver.getBalance().add(transfer));
 
-                        // Save the updated accounts
                         Account updatedSender = accountRepository.saveAndFlush(sender);
                         Account updatedReceiver = accountRepository.saveAndFlush(receiver);
 
                         recievedTransfer(updatedReceiver);
 
-                        // Return response for the sender account
                         return AccountResponse.builder()
                                 .id(updatedSender.getId())
                                 .accountNumber(updatedSender.getAccountNumber())
@@ -343,7 +339,7 @@ public class AccountServiceImpl implements AccountService {
         logTransferReceipt(receiver);
     }
 
-    private void logTransferReceipt(Account receiver) {
+    private void logTransferReceipt(Account receiver)   {
         System.out.println("Transfer received by account ID: " + receiver.getId() + " at " + LocalDateTime.now());
         System.out.println("New balance: " + receiver.getBalance());
     }

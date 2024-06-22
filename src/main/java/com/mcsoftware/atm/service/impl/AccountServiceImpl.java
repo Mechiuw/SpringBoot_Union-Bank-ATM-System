@@ -10,6 +10,7 @@ import com.mcsoftware.atm.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -228,7 +229,27 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse depositBalance(String id, BigDecimal deposit) {
-        return null;
+        try{
+            Account account = accountRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found account with id " + id));
+
+            if(account.getBalance() != null) {
+                account.setBalance(account.getBalance().multiply(deposit));
+            }
+
+
+            return AccountResponse.builder()
+                    .id(account.getId())
+                    .accountNumber(account.getId())
+                    .balance()
+                    .build();
+        } catch (NoSuchElementException e){
+            System.err.println("no such element: " + e.getMessage());
+            throw e;
+        } catch (Exception e){
+            System.err.println("Exceptions caught: " + e.getCause());
+            throw e;
+        }
     }
 
     @Override

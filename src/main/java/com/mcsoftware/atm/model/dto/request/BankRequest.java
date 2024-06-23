@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -16,4 +17,5 @@ public class BankRequest {
     private String name;
     private List<BranchRequest> branchList;
     private List<AccountRequest> accountList;
+    private BigDecimal bankRepo;
 }

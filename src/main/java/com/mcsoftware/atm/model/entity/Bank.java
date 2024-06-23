@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -31,4 +32,7 @@ public class Bank {
     @JsonManagedReference
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<Account> accountList;
+
+    @Column(name = "bank_repository",nullable = false)
+    private BigDecimal bankRepository;
 }

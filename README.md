@@ -1,5 +1,5 @@
 # One of the most longest "mini-transaction" service layer i ever made 😂😂
-##### if there's a way more simpler let me know!
+##### if there's a way that is more simple than these let me know!
 
 
 ```java

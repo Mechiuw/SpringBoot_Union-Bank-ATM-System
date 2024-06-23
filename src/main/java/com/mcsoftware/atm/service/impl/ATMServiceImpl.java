@@ -129,7 +129,14 @@ public class ATMServiceImpl implements ATMService {
 
     @Override
     public void delete(String id) {
-
+        try{
+            ATM deleted = atmRepository.findById(id)
+                            .orElseThrow(() -> new NoSuchElementException("not found atm"));
+            atmRepository.delete(deleted);
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

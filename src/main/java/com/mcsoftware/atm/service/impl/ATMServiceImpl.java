@@ -141,7 +141,17 @@ public class ATMServiceImpl implements ATMService {
 
     @Override
     public ATMResponse checkCashBalance(String id) {
-        return null;
+        try {
+            ATM atm = atmRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found atm"));
+            return ATMResponse.builder()
+                    .id(atm.getId())
+                    .cashBalance(atm.getCashBalance())
+                    .build();
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

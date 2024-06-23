@@ -22,9 +22,17 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public BankResponse create(BankRequest bankRequest) {
+
         Bank bank = Bank.builder()
                 .name(bankRequest.getName())
+                .branches(bankRequest.getBranchList())
+                .accountList(bankRequest.getAccountList())
+                .bankBalanceRepository(bankRequest.getBankRepo())
                 .build();
+        accountLimiter(bankRequest.getAccountList());
+
+        Bank savedBank = bankRepository.saveAndFlush(bank);
+
         return null;
     }
 
@@ -70,24 +78,39 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public List<Account> addAccounts(String id,List<Account> accounts) {
-        if(!accounts.isEmpty()){
+        if(accounts == null || !accounts.isEmpty()){
             Bank bank = bankRepository.findById(id)
                     .orElseThrow(() -> new NoSuchElementException("not found any bank"));
-            bank.setAccountList(accounts);
+
+            assert accounts != null;
+            bank.getAccountList().addAll(accounts);
+
             Bank savedBank = bankRepository.saveAndFlush(bank);
             return savedBank.getAccountList();
         } else {
-            throw new NoSuchElementException("accounts in bank are empty");
+            throw new IllegalArgumentException("accounts in bank are empty");
         }
     }
 
     @Override
     public BigDecimal repositoryManager(BigDecimal balance) {
+
         return null;
     }
 
     @Override
     public void transactionsValidator(BigDecimal transactions) {
 
+    }
+
+    public List<Account> accountLimiter(List<Account> accounts){
+        if(accounts.size() < 5){
+            throw new IllegalArgumentException("accounts should be atleast 5");
+        }
+        if(accounts.size() >= 10){
+            System.err.println("regulations for initializing bank, to have 5 to 20 members only at first");
+            return accounts.stream().limit(10).toList();
+        }
+        return null;
     }
 }

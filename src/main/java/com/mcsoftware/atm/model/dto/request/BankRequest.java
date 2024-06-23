@@ -1,5 +1,6 @@
 package com.mcsoftware.atm.model.dto.request;
 
+import com.mcsoftware.atm.model.entity.Account;
 import com.mcsoftware.atm.model.entity.Branch;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class BankRequest {
     private String name;
-    private List<BranchRequest> branchList;
-    private List<AccountRequest> accountList;
+    private List<Branch> branchList;
+    private List<Account> accountList;
     private BigDecimal bankRepo;
 }

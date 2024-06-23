@@ -158,7 +158,7 @@ public class ATMServiceImpl implements ATMService {
     public ATMResponse withdraw(String id, BigDecimal withdrawal) {
         try {
             ATM atm = atmRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("not found atm"));
+                    .orElseThrow(() -> new NoSuchElementException("not found atm to withdraw"));
             BigDecimal processed = atm.getCashBalance().subtract(withdrawal);
             atm.setCashBalance(processed);
             ATM subtractedAtmBalance = atmRepository.saveAndFlush(atm);
@@ -175,7 +175,25 @@ public class ATMServiceImpl implements ATMService {
     }
 
     @Override
-    public ATMResponse deposit(BigDecimal deposit) {
-        return null;
+    public ATMResponse deposit(String id,BigDecimal deposit) {
+        try {
+            ATM atm = atmRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found atm to deposit"));
+            assert atm != null : "not found atm with such id";
+
+            BigDecimal processed = atm.getCashBalance().add(deposit);
+            atm.setCashBalance(processed);
+
+            ATM depositAtm = atmRepository.save(atm);
+            return ATMResponse.builder()
+                    .id(depositAtm.getId())
+                    .location(depositAtm.getLocation())
+                    .branch(depositAtm.getBranch().getId())
+                    .cashBalance(depositAtm.getCashBalance())
+                    .build();
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 }

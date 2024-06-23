@@ -104,7 +104,27 @@ public class ATMServiceImpl implements ATMService {
 
     @Override
     public ATMResponse update(String id, ATMRequest atmRequest) {
-        return null;
+        try{
+            ATM atm = atmRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found atm with id" + id));
+
+
+            atm.setBranch(atmRequest.getBranch());
+            atm.setLocation(atmRequest.getLocation());
+            atm.setCashBalance(atmRequest.getCashBalance());
+
+            ATM saved = atmRepository.saveAndFlush(atm);
+
+            return ATMResponse.builder()
+                    .id(saved.getId())
+                    .branch(saved.getBranch().getId())
+                    .location(saved.getLocation())
+                    .cashBalance(saved.getCashBalance())
+                    .build();
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

@@ -14,6 +14,6 @@ public interface ATMService {
     ATMResponse update(String id, ATMRequest atmRequest);
     void delete(String id);
     ATMResponse checkCashBalance(String id);
-    ATMResponse withdraw(BigDecimal withdrawal);
-    ATMResponse deposit(BigDecimal deposit);
+    ATMResponse withdraw(String id,BigDecimal withdrawal);
+    ATMResponse deposit(String id,BigDecimal deposit);
 }

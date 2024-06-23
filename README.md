@@ -12,6 +12,9 @@ import com.mcsoftware.atm.model.entity.User;
 import com.mcsoftware.atm.repository.AccountRepository;
 import com.mcsoftware.atm.repository.UserRepository;
 import com.mcsoftware.atm.service.AccountService;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +27,12 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
 
+    @Valid
     public void minimumDeposit(BigDecimal currentBalance) {
         if(currentBalance.compareTo(new BigDecimal("500000")) < 0){
             throw new IllegalArgumentException("[WARNING] DEPOSIT BALANCE MUST BE LEAST 500000");
@@ -35,6 +40,7 @@ public class AccountServiceImpl implements AccountService {
 
     };
 
+    @Valid
     public void checkAccountChanges(Account account,AccountRequest accountRequest){
         String accNumber = accountRequest.getAccountNumber();
         String accUserId = accountRequest.getUser().getId();
@@ -46,6 +52,7 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    @Valid
     public void checkAccountDeletion(String accId, Account account) {
         Optional<Account> checkPresent = accountRepository.findById(accId);
         if (checkPresent.isPresent()) {
@@ -306,19 +313,15 @@ public class AccountServiceImpl implements AccountService {
                 if (transfer.compareTo(minimumTransfer) >= 0) {
                     BigDecimal totalDebit = transfer.add(adminFee);
 
-                    // Check if sender has sufficient balance
                     if (sender.getBalance().compareTo(totalDebit) >= 0) {
-                        // Perform the balance transfer
                         sender.setBalance(sender.getBalance().subtract(totalDebit));
                         receiver.setBalance(receiver.getBalance().add(transfer));
 
-                        // Save the updated accounts
                         Account updatedSender = accountRepository.saveAndFlush(sender);
                         Account updatedReceiver = accountRepository.saveAndFlush(receiver);
 
                         recievedTransfer(updatedReceiver);
 
-                        // Return response for the sender account
                         return AccountResponse.builder()
                                 .id(updatedSender.getId())
                                 .accountNumber(updatedSender.getAccountNumber())

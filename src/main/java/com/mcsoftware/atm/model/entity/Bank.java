@@ -34,5 +34,5 @@ public class Bank {
     private List<Account> accountList;
 
     @Column(name = "bank_repository",nullable = false)
-    private BigDecimal bankRepository;
+    private BigDecimal bankBalanceRepository;
 }

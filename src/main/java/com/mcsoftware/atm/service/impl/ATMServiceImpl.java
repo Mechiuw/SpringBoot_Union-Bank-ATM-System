@@ -34,25 +34,33 @@ public class ATMServiceImpl implements ATMService {
 
     @Override
     public ATMResponse create(ATMRequest atmRequest) {
-        checkBalance(atmRequest.getCashBalance());
+        try {
+            checkBalance(atmRequest.getCashBalance());
 
-        Branch branch = branchRepository.findById(atmRequest.getBranch().getId())
-                .orElseThrow(() -> new NoSuchElementException("not found branch with id: " + atmRequest.getBranch().getId()));
+            Branch branch = branchRepository.findById(atmRequest.getBranch().getId())
+                    .orElseThrow(() -> new NoSuchElementException("not found branch with id: " + atmRequest.getBranch().getId()));
 
-        ATM atm = ATM.builder()
-                .location(atmRequest.getLocation())
-                .cashBalance(atmRequest.getCashBalance())
-                .branch(branch)
-                .build();
+            ATM atm = ATM.builder()
+                    .location(atmRequest.getLocation())
+                    .cashBalance(atmRequest.getCashBalance())
+                    .branch(branch)
+                    .build();
 
-        ATM savedAtm = atmRepository.save(atm);
+            ATM savedAtm = atmRepository.save(atm);
 
-        return ATMResponse.builder()
-                .id(savedAtm.getId())
-                .branch(savedAtm.getBranch().getId())
-                .cashBalance(savedAtm.getCashBalance())
-                .location(savedAtm.getLocation())
-                .build();
+            return ATMResponse.builder()
+                    .id(savedAtm.getId())
+                    .branch(savedAtm.getBranch().getId())
+                    .cashBalance(savedAtm.getCashBalance())
+                    .location(savedAtm.getLocation())
+                    .build();
+        } catch (NoSuchElementException e){
+            System.err.println("not found any branch: " + e.getMessage());
+            throw e;
+        } catch (Exception e){
+            System.err.println("Exception caught: " + e.getMessage());
+            throw e;
+        }
     }
 
     @Override

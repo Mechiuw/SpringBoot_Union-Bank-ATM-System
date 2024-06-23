@@ -65,7 +65,25 @@ public class ATMServiceImpl implements ATMService {
 
     @Override
     public ATMResponse getById(String id) {
-        return null;
+        try {
+            ATM atm = atmRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found atm with id: " + id));
+
+            Branch branch = branchRepository.findById(atm.getBranch().getId())
+                    .orElseThrow(() -> new NoSuchElementException("not found branch with id: " + atm.getBranch().getId()));
+            return ATMResponse.builder()
+                    .id(atm.getId())
+                    .location(atm.getLocation())
+                    .branch(branch.getId())
+                    .cashBalance(atm.getCashBalance())
+                    .build();
+        } catch (NoSuchElementException e){
+            System.err.println("not found any trace : " + e.getMessage() );
+            throw e;
+        } catch (Exception e){
+            System.err.println("Exception caught: " + e.getMessage());
+            throw e;
+        }
     }
 
     @Override

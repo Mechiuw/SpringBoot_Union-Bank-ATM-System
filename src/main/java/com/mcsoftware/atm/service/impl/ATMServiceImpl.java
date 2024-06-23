@@ -1,0 +1,92 @@
+package com.mcsoftware.atm.service.impl;
+
+import com.mcsoftware.atm.model.dto.request.ATMRequest;
+import com.mcsoftware.atm.model.dto.response.ATMResponse;
+import com.mcsoftware.atm.model.entity.ATM;
+import com.mcsoftware.atm.model.entity.Branch;
+import com.mcsoftware.atm.repository.ATMRepository;
+import com.mcsoftware.atm.repository.BranchRepository;
+import com.mcsoftware.atm.service.ATMService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+@Service
+@RequiredArgsConstructor
+public class ATMServiceImpl implements ATMService {
+    private final BranchRepository branchRepository;
+    private final ATMRepository atmRepository;
+    private final BigDecimal leastBalance = new BigDecimal("1000000");
+
+
+    public void checkBalance(BigDecimal balance){
+        if(balance == null || balance.equals(BigDecimal.ZERO)){
+            throw new IllegalArgumentException("can't make atm if cash balance is null o zero");
+        }
+        if(balance.compareTo(leastBalance) < 0){
+            throw new IllegalArgumentException("can't make atm if cash balance below the least balance: Rp" + leastBalance);
+        }
+    }
+
+    @Override
+    public ATMResponse create(ATMRequest atmRequest) {
+        checkBalance(atmRequest.getCashBalance());
+
+        Branch branch = branchRepository.findById(atmRequest.getBranch().getId())
+                .orElseThrow(() -> new NoSuchElementException("not found branch with id: " + atmRequest.getBranch().getId()));
+
+        ATM atm = ATM.builder()
+                .location(atmRequest.getLocation())
+                .cashBalance(atmRequest.getCashBalance())
+                .branch(branch)
+                .build();
+
+        ATM savedAtm = atmRepository.save(atm);
+
+        return ATMResponse.builder()
+                .id(savedAtm.getId())
+                .branch(savedAtm.getBranch().getId())
+                .cashBalance(savedAtm.getCashBalance())
+                .location(savedAtm.getLocation())
+                .build();
+    }
+
+    @Override
+    public ATMResponse getById(String id) {
+        return null;
+    }
+
+    @Override
+    public List<ATM> getAll() {
+        return null;
+    }
+
+    @Override
+    public ATMResponse update(String id, ATMRequest atmRequest) {
+        return null;
+    }
+
+    @Override
+    public void delete(String id) {
+
+    }
+
+    @Override
+    public ATMResponse checkCashBalance(String id) {
+        return null;
+    }
+
+    @Override
+    public ATMResponse withdraw(BigDecimal withdrawal) {
+        return null;
+    }
+
+    @Override
+    public ATMResponse deposit(BigDecimal deposit) {
+        return null;
+    }
+}

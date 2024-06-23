@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -12,6 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @Table(name = "m_atm")
 public class ATM {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -23,4 +26,7 @@ public class ATM {
     @JoinColumn(name = "branch_id",referencedColumnName = "id")
     @JsonBackReference
     private Branch branch;
+
+    @Column(name = "cash_balance",nullable = false)
+    private BigDecimal cashBalance;
 }

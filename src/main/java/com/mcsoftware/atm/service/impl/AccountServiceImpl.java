@@ -27,7 +27,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
 
-    @Valid
+
     public void minimumDeposit(BigDecimal currentBalance) {
         if(currentBalance.compareTo(new BigDecimal("500000")) < 0){
             throw new IllegalArgumentException("[WARNING] DEPOSIT BALANCE MUST BE LEAST 500000");
@@ -35,7 +35,6 @@ public class AccountServiceImpl implements AccountService {
 
     };
 
-    @Valid
     public void checkAccountChanges(Account account,AccountRequest accountRequest){
         String accNumber = accountRequest.getAccountNumber();
         String accUserId = accountRequest.getUser().getId();
@@ -47,7 +46,6 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    @Valid
     public void checkAccountDeletion(String accId, Account account) {
         Optional<Account> checkPresent = accountRepository.findById(accId);
         if (checkPresent.isPresent()) {

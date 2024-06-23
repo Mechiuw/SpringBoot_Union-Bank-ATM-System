@@ -8,11 +8,15 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface AccountService {
+
+    //TODO MAIN CRUD SERVICE LAYER
     AccountResponse create(AccountRequest accountRequest);
     List<Account> getAll();
     AccountResponse getById(String id);
     AccountResponse update(String id,AccountRequest accountRequest);
     void delete(String id);
+
+    //TODO BUSINESS LOGIC SERVICE LAYER
     AccountResponse softDeleteAccount(String id);
     AccountResponse checkCurrentBalance(String id);
     AccountResponse depositBalance(String id, BigDecimal deposit);

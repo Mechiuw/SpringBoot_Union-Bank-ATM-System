@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -71,6 +72,7 @@ public class ATMServiceImpl implements ATMService {
 
             Branch branch = branchRepository.findById(atm.getBranch().getId())
                     .orElseThrow(() -> new NoSuchElementException("not found branch with id: " + atm.getBranch().getId()));
+
             return ATMResponse.builder()
                     .id(atm.getId())
                     .location(atm.getLocation())
@@ -88,7 +90,16 @@ public class ATMServiceImpl implements ATMService {
 
     @Override
     public List<ATM> getAll() {
-        return null;
+        try {
+            List<ATM> atmList = atmRepository.findAll();
+            if (atmList.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return atmList;
+        }  catch (Exception e){
+            System.err.println("Exception caught: " + e.getMessage());
+            throw new RuntimeException("Error Occurred to atm: ",e);
+        }
     }
 
     @Override

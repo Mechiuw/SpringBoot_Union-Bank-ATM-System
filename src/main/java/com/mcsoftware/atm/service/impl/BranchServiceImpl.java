@@ -179,14 +179,12 @@ public class BranchServiceImpl implements BranchService {
             Map<String, List<Branch>> groupedByLocations = branches.stream()
                     .collect(Collectors.groupingBy(Branch::getLocation));
 
-            List<BranchGroupingResponse> responses = groupedByLocations.entrySet().stream()
+            return groupedByLocations.entrySet().stream()
                     .map(entry -> BranchGroupingResponse.builder()
                             .branchId(entry.getValue().get(0).getId())
                             .locations(entry.getKey())
                             .branches(entry.getValue())
                             .build()).toList();
-
-            return responses;
         } catch (Exception e){
             System.err.println(e.getMessage());
             throw e;

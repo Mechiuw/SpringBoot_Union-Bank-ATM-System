@@ -17,4 +17,6 @@ public interface BranchService {
     List<ATM> getAllAtm(String branchId);
     BranchResponse bankReference(String branchId);
     BranchGroupingResponse groupedBranchLocations();
+
+    List<ATM> atmValidator(List<ATM> atms);
 }

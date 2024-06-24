@@ -12,6 +12,8 @@ import com.mcsoftware.atm.service.BranchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -72,12 +74,50 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public List<Branch> getAll() {
-        return null;
+        try {
+            List<Branch> branches = branchRepository.findAll();
+            if(branches.isEmpty()){
+                System.err.println("violation branch table regulations : branch is empty");
+                return Collections.emptyList();
+            } else {
+                return branches;
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override
     public BranchResponse update(String id, BranchRequest branchRequest) {
-        return null;
+        try {
+            Branch branch = branchRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("Branch not found with id: " + id));
+
+            if (!branchRequest.getName().equals(branch.getName())) {
+                branch.setName(branchRequest.getName());
+            }
+            if (!branchRequest.getLocation().equals(branch.getLocation())) {
+                branch.setLocation(branchRequest.getLocation());
+            }
+
+            if (branchRequest.getAtmList() != null && !branchRequest.getAtmList().isEmpty()) {
+                branch.setAtms(branchRequest.getAtmList());
+            }
+
+            Branch savedBranch = branchRepository.saveAndFlush(branch);
+
+            return BranchResponse.builder()
+                    .id(savedBranch.getId())
+                    .name(savedBranch.getName())
+                    .location(savedBranch.getLocation())
+                    .bank(savedBranch.getBank().getId())
+                    .atmList(savedBranch.getAtms())
+                    .build();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

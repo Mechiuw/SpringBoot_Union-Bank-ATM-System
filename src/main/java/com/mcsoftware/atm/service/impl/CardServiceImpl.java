@@ -13,6 +13,8 @@ import com.mcsoftware.atm.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -83,13 +85,54 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public CardResponse getAll() {
-        return null;
+    public List<Card> getAll() {
+        try {
+            List<Card> cards = cardRepository.findAll();
+            if (!cards.isEmpty()) {
+                return cards;
+            } else {
+                System.err.println("not found any cards");
+                return Collections.emptyList();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override
     public CardResponse update(String id, CardRequest cardRequest) {
-        return null;
+        try {
+            Card card = cardRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found card"));
+            if (card.getId().equals(id)) {
+                card.setCardNumber(cardRequest.getCardNumber());
+                card.setPin(cardRequest.getPin());
+                card.setUser(cardRequest.getUser());
+                card.setAccount(cardRequest.getAccount());
+
+                Card updatedCard = cardRepository.saveAndFlush(card);
+
+                return CardResponse.builder()
+                        .id(updatedCard.getId())
+                        .cardNumber(updatedCard.getCardNumber())
+                        .pin(updatedCard.getPin())
+                        .user(updatedCard.getUser().getId())
+                        .account(updatedCard.getAccount().getId())
+                        .build();
+            } else {
+                return CardResponse.builder()
+                        .id("not found card id")
+                        .cardNumber("not found card number")
+                        .pin("not found card pin")
+                        .user("not found card user")
+                        .account("not found any account associated to card")
+                        .build();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

@@ -136,8 +136,15 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public CardResponse delete(String id) {
-        return null;
+    public void delete(String id) {
+        try {
+            Card card = cardRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found any card"));
+            cardRepository.delete(card);
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

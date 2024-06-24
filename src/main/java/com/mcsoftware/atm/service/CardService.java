@@ -13,7 +13,7 @@ public interface CardService {
     CardResponse getById(String id);
     List<Card> getAll();
     CardResponse update(String id,CardRequest cardRequest);
-    CardResponse delete(String id);
+    void delete(String id);
 
     //BUSINESS LOGIC SERVICE
     CardResponse blockCard(CardRequest cardRequest);

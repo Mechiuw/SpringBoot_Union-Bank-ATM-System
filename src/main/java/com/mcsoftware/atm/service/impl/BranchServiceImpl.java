@@ -151,7 +151,26 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public BranchResponse bankReference(String branchId) {
-        return null;
+        try {
+            Branch branch = branchRepository.findById(branchId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any branch"));
+            if (branch.getBank() != null) {
+                return BranchResponse.builder()
+                        .name(branch.getName())
+                        .location(branch.getLocation())
+                        .bank(branch.getBank().getId())
+                        .build();
+            } else {
+                return BranchResponse.builder()
+                        .name("not found any branch name")
+                        .location("not found any branch location")
+                        .bank("not found any branch's bank")
+                        .build();
+            }
+        } catch (Exception e){
+            System.err.println("Exception caught: " + e.getMessage());
+            throw e;
+        }
     }
 
     @Override

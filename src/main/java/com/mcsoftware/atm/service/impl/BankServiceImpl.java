@@ -244,7 +244,14 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public void transactionsValidator(BigDecimal transactions) {
-
+        BigDecimal maximumDeposit = new BigDecimal("3000000");
+        BigDecimal maximumWithdraw = new BigDecimal("3000000");
+        if(transactions.compareTo(maximumDeposit) > 0){
+            throw new IllegalArgumentException("maximum deposit around " + maximumDeposit);
+        }
+        if(transactions.compareTo(maximumWithdraw) > 0){
+            throw new IllegalArgumentException("maximum withdrawal atm around " + maximumWithdraw);
+        }
     }
 
     public List<Account> accountLimiter(List<Account> accounts){

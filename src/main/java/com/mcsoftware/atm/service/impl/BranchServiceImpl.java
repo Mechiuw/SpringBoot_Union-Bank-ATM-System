@@ -11,7 +11,6 @@ import com.mcsoftware.atm.repository.BranchRepository;
 import com.mcsoftware.atm.service.BranchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -50,7 +49,25 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public BranchResponse getById(String id) {
-        return null;
+        try {
+            Branch branch = branchRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found any branch with id : " + id));
+            Bank bank = bankRepository.findById(branch.getBank().getId())
+                    .orElseThrow(() -> new NoSuchElementException("not found any bank with id" + branch.getBank().getId()));
+            if(branch != null){
+                throw new IllegalArgumentException("violated branch table regulations : branch is null");
+            } else {
+                return BranchResponse.builder()
+                        .id(branch.getId())
+                        .name(branch.getName())
+                        .location(branch.getLocation())
+                        .bank(bank.getId())
+                        .build();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

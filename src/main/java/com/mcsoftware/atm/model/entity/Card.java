@@ -18,6 +18,7 @@ public class Card {
 
     @Column(name = "card_number",nullable = false)
     private String cardNumber;
+
     @Column(name = "pin",nullable = false)
     private String pin;
 

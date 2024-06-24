@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class CardResponse {
+    private String id;
     private String cardNumber;
     private String pin;
     private String user;

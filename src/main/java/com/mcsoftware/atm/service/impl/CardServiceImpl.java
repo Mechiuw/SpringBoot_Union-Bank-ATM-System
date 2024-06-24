@@ -56,7 +56,30 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public CardResponse getById(String id) {
-        return null;
+        try {
+            Card card = cardRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found any card"));
+            if(card.getId().equals(id)){
+                return CardResponse.builder()
+                        .id(card.getId())
+                        .cardNumber(card.getCardNumber())
+                        .pin(card.getPin())
+                        .user(card.getUser().getId())
+                        .account(card.getAccount().getId())
+                        .build();
+            } else {
+                return CardResponse.builder()
+                        .id("not found card id")
+                        .cardNumber("not found card number")
+                        .pin("not found card pin")
+                        .user("not found card user")
+                        .account("not found any account associated to card")
+                        .build();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

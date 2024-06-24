@@ -81,7 +81,36 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public BankResponse update(String id, BankRequest bankRequest) {
-        return null;
+
+        try{
+            Bank bank = bankRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found the associated bank with id : " + id));
+            if(bank != null){
+                bank.setName(bankRequest.getName());
+                bank.setBranches(bankRequest.getBranchList());
+                bank.setAccountList(bankRequest.getAccountList());
+                bank.setBankBalanceRepository(bankRequest.getBankRepo());
+
+                Bank newUpdatedBank = bankRepository.saveAndFlush(bank);
+                return BankResponse.builder()
+                        .id(newUpdatedBank.getId())
+                        .name(newUpdatedBank.getName())
+                        .branchList(newUpdatedBank.getBranches())
+                        .bankRepo(newUpdatedBank.getBankBalanceRepository())
+                        .accountList(newUpdatedBank.getAccountList())
+                        .build();
+            }
+            return BankResponse.builder()
+                    .id("not found id")
+                    .name("not found name")
+                    .bankRepo(BigDecimal.ZERO)
+                    .accountList(Collections.emptyList())
+                    .branchList(Collections.emptyList())
+                    .build();
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

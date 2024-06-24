@@ -23,7 +23,7 @@ public interface BankService {
 
     //TODO BUSINESS LOGIC SERVICE
     List<Branch> listAllBranch(String bankId);
-    List<ATM> listAllBranchAtms(String branchId);
+    List<ATM> listAllBranchAtms(String bankId,String branchId);
 
     BankResponse depositToAtm(String bankId, String atmId, BigDecimal depositFromRepo);
     BankResponse withdrawalFromAtm(String bankId, String atmId, BigDecimal withdrawalFromAtm);

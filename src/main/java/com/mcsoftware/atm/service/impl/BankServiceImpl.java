@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -144,8 +145,19 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public List<ATM> listAllBranchAtms(String branchId) {
-        return null;
+    public List<ATM> listAllBranchAtms(String bankId,String branchId) {
+        try{
+            Bank bank = bankRepository.findById(bankId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any bank"));
+            Branch filterBranch = bank.getBranches().stream()
+                    .filter(id -> id.getId().equals(branchId)).findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("not found any branch wired with branch id"));
+
+            return filterBranch.getAtms();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

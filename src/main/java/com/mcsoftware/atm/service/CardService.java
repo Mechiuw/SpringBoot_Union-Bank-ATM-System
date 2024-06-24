@@ -2,6 +2,7 @@ package com.mcsoftware.atm.service;
 
 import com.mcsoftware.atm.model.dto.request.CardRequest;
 import com.mcsoftware.atm.model.dto.response.CardResponse;
+import com.mcsoftware.atm.model.dto.response.UserResponse;
 
 public interface CardService {
     //CRUD SERVICE
@@ -13,5 +14,6 @@ public interface CardService {
 
     //BUSINESS LOGIC SERVICE
     CardResponse blockCard(CardRequest cardRequest);
-    CardResponse retrieveCard(String cardId, String userId);
+    UserResponse retrieveCard(String cardId, String userId);
+    CardResponse updatePin(String cardId);
 }

@@ -134,7 +134,19 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public List<ATM> getAllAtm(String branchId) {
-        return null;
+        try {
+            Branch branch = branchRepository.findById(branchId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any branch with id"));
+            if (!branch.getAtms().isEmpty()) {
+                return branch.getAtms();
+            } else {
+                System.err.println("empty atm in one branch");
+                return Collections.emptyList();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

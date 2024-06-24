@@ -122,7 +122,14 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public void delete(String id) {
-
+        try{
+            Branch branch = branchRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found any branch with id " +id));
+            branchRepository.delete(branch);
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

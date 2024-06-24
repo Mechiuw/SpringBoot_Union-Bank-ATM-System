@@ -20,4 +20,8 @@ public class BankResponse {
     private List<Branch> branchList;
     private List<Account> accountList;
     private BigDecimal bankRepo;
+
+    private String changesDeposit;
+    private String fromBank;
+    private String changesWithdraw;
 }

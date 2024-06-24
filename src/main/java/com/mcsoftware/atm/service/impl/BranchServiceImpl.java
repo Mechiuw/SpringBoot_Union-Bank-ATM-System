@@ -12,10 +12,8 @@ import com.mcsoftware.atm.service.BranchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -174,8 +172,25 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public BranchGroupingResponse groupedBranchLocations() {
-        return null;
+    public List<BranchGroupingResponse> groupedBranchLocations() {
+        try {
+            List<Branch> branches = branchRepository.findAll();
+
+            Map<String, List<Branch>> groupedByLocations = branches.stream()
+                    .collect(Collectors.groupingBy(Branch::getLocation));
+
+            List<BranchGroupingResponse> responses = groupedByLocations.entrySet().stream()
+                    .map(entry -> BranchGroupingResponse.builder()
+                            .branchId(entry.getValue().get(0).getId())
+                            .locations(entry.getKey())
+                            .branches(entry.getValue())
+                            .build()).toList();
+
+            return responses;
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

@@ -16,7 +16,7 @@ public interface BranchService {
     void delete(String id);
     List<ATM> getAllAtm(String branchId);
     BranchResponse bankReference(String branchId);
-    BranchGroupingResponse groupedBranchLocations();
+    List<BranchGroupingResponse> groupedBranchLocations();
 
     List<ATM> atmValidator(List<ATM> atms);
 }

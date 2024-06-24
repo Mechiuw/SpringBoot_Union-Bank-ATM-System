@@ -14,6 +14,6 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class BranchGroupingResponse {
     private String branchId;
-    private String Locations;
+    private String locations;
     private List<Branch> branches;
 }

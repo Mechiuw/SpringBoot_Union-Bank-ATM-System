@@ -115,7 +115,16 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public void delete(String id) {
-
+        try{
+        Bank foundBank = bankRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("not found any bank with id: " + id));
+        if(foundBank != null){
+            bankRepository.delete(foundBank);
+        }
+        } catch ( Exception e) {
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

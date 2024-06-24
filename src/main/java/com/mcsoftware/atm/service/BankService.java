@@ -25,8 +25,8 @@ public interface BankService {
     List<Branch> listAllBranch(String bankId);
     List<ATM> listAllBranchAtms(String bankId,String branchId);
 
-    BankResponse depositToAtm(String bankId, String atmId, BigDecimal depositFromRepo);
-    BankResponse withdrawalFromAtm(String bankId, String atmId, BigDecimal withdrawalFromAtm);
+    BankResponse depositToAtm(String bankId, String branchId,String atmId, BigDecimal depositFromRepo);
+    BankResponse withdrawalFromAtm(String bankId, String branchId,String atmId, BigDecimal withdrawalFromAtm);
 
     List<Account> addAccounts(String id,List<Account> accounts);
 

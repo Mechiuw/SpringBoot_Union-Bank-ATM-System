@@ -6,7 +6,9 @@ import com.mcsoftware.atm.model.entity.ATM;
 import com.mcsoftware.atm.model.entity.Account;
 import com.mcsoftware.atm.model.entity.Bank;
 import com.mcsoftware.atm.model.entity.Branch;
+import com.mcsoftware.atm.repository.ATMRepository;
 import com.mcsoftware.atm.repository.BankRepository;
+import com.mcsoftware.atm.repository.BranchRepository;
 import com.mcsoftware.atm.service.BankService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cglib.core.Local;
@@ -19,13 +21,13 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BankServiceImpl implements BankService {
     private final BankRepository bankRepository;
-
+    private final ATMRepository atmRepository;
+    private final BranchRepository branchRepository;
     @Override
     public BankResponse create(BankRequest bankRequest) {
 
@@ -161,12 +163,12 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public BankResponse depositToAtm(String bankId, String atmId, BigDecimal depositFromRepo) {
+    public BankResponse depositToAtm(String bankId,String branchId,String atmId, BigDecimal depositFromRepo) {
         try {
             Bank bank = bankRepository.findById(bankId)
                     .orElseThrow(() -> new NoSuchElementException("not found any bank"));
             Branch branch = bank.getBranches().stream()
-                    .filter(x -> x.getId().equals(atmId)).findFirst()
+                    .filter(x -> x.getId().equals(branchId)).findFirst()
                     .orElseThrow(() -> new NoSuchElementException("not found any branch"));
             ATM atm = branch.getAtms().stream()
                     .filter(x -> x.getId().equals(atmId)).findFirst()
@@ -180,7 +182,10 @@ public class BankServiceImpl implements BankService {
                 BigDecimal withdrawBank = bank.getBankBalanceRepository().subtract(depositFromRepo);
                 bank.setBankBalanceRepository(withdrawBank);
 
-                Bank save = bankRepository.save(bank);
+                atmRepository.saveAndFlush(atm);
+                branchRepository.saveAndFlush(branch);
+                Bank save = bankRepository.saveAndFlush(bank);
+
                 return BankResponse.builder()
                         .id(save.getId())
                         .name(save.getName())
@@ -204,8 +209,52 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public BankResponse withdrawalFromAtm(String bankId, String atmId, BigDecimal withdrawalFromAtm) {
-        return null;
+    public BankResponse withdrawalFromAtm(String bankId,String branchId, String atmId, BigDecimal withdrawalFromAtm) {
+        try {
+            Bank bank = bankRepository.findById(bankId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any bank"));
+
+            Branch branch = bank.getBranches().stream()
+                    .filter(x -> x.getId().equals(branchId))
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("not found any bank"));
+            ATM atm = branch.getAtms().stream()
+                    .filter(x -> x.getId().equals(atmId))
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("not found any bank"));
+
+            transactionsValidator(withdrawalFromAtm);
+
+            if (atm != null) {
+                BigDecimal minFromAtm = atm.getCashBalance().subtract(withdrawalFromAtm);
+                atm.setCashBalance(minFromAtm);
+                BigDecimal plusToRepo = bank.getBankBalanceRepository().add(withdrawalFromAtm);
+                bank.setBankBalanceRepository(plusToRepo);
+
+                atmRepository.saveAndFlush(atm);
+                branchRepository.saveAndFlush(branch);
+                Bank savedBank = bankRepository.saveAndFlush(bank);
+
+                return BankResponse.builder()
+                        .id(savedBank.getId())
+                        .name(savedBank.getName())
+                        .changesDeposit("atm balance : " + withdrawalFromAtm + "-")
+                        .fromBank("bank repo balance : " + withdrawalFromAtm + "+")
+                        .bankRepo(savedBank.getBankBalanceRepository())
+                        .build();
+            } else {
+                return BankResponse.builder()
+                        .id("-")
+                        .name("-")
+                        .changesDeposit("nothing changes, no atm detected")
+                        .fromBank("nothing changes, bank balance still normal")
+                        .bankRepo(bank.getBankBalanceRepository())
+                        .build();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

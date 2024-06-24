@@ -23,16 +23,16 @@ public class BankServiceImpl implements BankService {
     @Override
     public BankResponse create(BankRequest bankRequest) {
 
+        List<Account> limitedAccounts = accountLimiter(bankRequest.getAccountList());
+        List<Branch> branches = branchManager(bankRequest.getBranchList());
         Bank bank = Bank.builder()
                 .name(bankRequest.getName())
-                .branches(bankRequest.getBranchList())
-                .accountList(bankRequest.getAccountList())
+                .branches(branches)
+                .accountList(limitedAccounts)
                 .bankBalanceRepository(bankRequest.getBankRepo())
                 .build();
-        accountLimiter(bankRequest.getAccountList());
 
         Bank savedBank = bankRepository.saveAndFlush(bank);
-
         return null;
     }
 
@@ -94,7 +94,10 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public BigDecimal repositoryManager(BigDecimal balance) {
-
+        BigDecimal standart = new BigDecimal("100000000");
+        if(balance.compareTo(standart) < 0){
+            throw new IllegalArgumentException("");
+        }
         return null;
     }
 
@@ -111,6 +114,21 @@ public class BankServiceImpl implements BankService {
             System.err.println("regulations for initializing bank, to have 5 to 20 members only at first");
             return accounts.stream().limit(10).toList();
         }
-        return null;
+        return accounts;
+    }
+
+    public List<Branch> branchManager(List<Branch> branches){
+        if(branches.size() < 5){
+            throw new IllegalArgumentException("branches should be atleast 5");
+        }
+        for(Branch branch : branches){
+            if(branch.getAtms().isEmpty()){
+                throw new IllegalArgumentException("ATM should be atleast 5");
+            }
+            if(branch.getAtms().size() < 5){
+                throw new IllegalArgumentException("regulations for initializing bank, to atleast have 5 atm each branch");
+            }
+        }
+        return branches;
     }
 }

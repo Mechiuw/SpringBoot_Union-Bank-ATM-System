@@ -34,4 +34,5 @@ public interface BankService {
     BigDecimal repositoryManager(BigDecimal balance);
     void transactionsValidator(BigDecimal transactions);
     List<Account> accountLimiter(List<Account> accounts);
+    List<Branch> branchManager(List<Branch> branches);
 }

@@ -11,7 +11,6 @@ import com.mcsoftware.atm.repository.BankRepository;
 import com.mcsoftware.atm.repository.BranchRepository;
 import com.mcsoftware.atm.service.BankService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -53,16 +52,21 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public BankResponse getById(String id) {
-        Bank bank = bankRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("not found any bank with id : "+ id));
-        if(bank != null){
-            return BankResponse.builder()
-                    .id(bank.getId())
-                    .name(bank.getName())
-                    .bankRepo(bank.getBankBalanceRepository())
-                    .build();
-        } else {
-            throw new RuntimeException("Exception caught");
+        try {
+            Bank bank = bankRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found any bank with id : " + id));
+            if (bank != null) {
+                return BankResponse.builder()
+                        .id(bank.getId())
+                        .name(bank.getName())
+                        .bankRepo(bank.getBankBalanceRepository())
+                        .build();
+            } else {
+                throw new RuntimeException("Exception caught");
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
         }
     }
 
@@ -84,7 +88,6 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public BankResponse update(String id, BankRequest bankRequest) {
-
         try{
             Bank bank = bankRepository.findById(id)
                     .orElseThrow(() -> new NoSuchElementException("not found the associated bank with id : " + id));
@@ -259,17 +262,22 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public List<Account> addAccounts(String id,List<Account> accounts) {
-        if(accounts == null || !accounts.isEmpty()){
-            Bank bank = bankRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("not found any bank"));
+        try {
+            if (accounts == null || !accounts.isEmpty()) {
+                Bank bank = bankRepository.findById(id)
+                        .orElseThrow(() -> new NoSuchElementException("not found any bank"));
 
-            assert accounts != null;
-            bank.getAccountList().addAll(accounts);
+                assert accounts != null;
+                bank.getAccountList().addAll(accounts);
 
-            Bank savedBank = bankRepository.saveAndFlush(bank);
-            return savedBank.getAccountList();
-        } else {
-            throw new IllegalArgumentException("accounts in bank are empty");
+                Bank savedBank = bankRepository.saveAndFlush(bank);
+                return savedBank.getAccountList();
+            } else {
+                throw new IllegalArgumentException("accounts in bank are empty");
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
         }
     }
 
@@ -291,6 +299,7 @@ public class BankServiceImpl implements BankService {
         return balance;
     }
 
+    //TODO HELPER
     public LocalDateTime timeExecutor(){
         LocalDate nextYear = LocalDate.now().plusYears(1).withDayOfYear(1);
         LocalTime afternoon = LocalTime.NOON;
@@ -299,42 +308,59 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public void transactionsValidator(BigDecimal transactions) {
-        BigDecimal maximumDeposit = new BigDecimal("3000000");
-        BigDecimal maximumWithdraw = new BigDecimal("3000000");
-        if(transactions.compareTo(maximumDeposit) > 0){
-            throw new IllegalArgumentException("maximum deposit around " + maximumDeposit);
-        }
-        if(transactions.compareTo(maximumWithdraw) > 0){
-            throw new IllegalArgumentException("maximum withdrawal atm around " + maximumWithdraw);
-        }
-        if(transactions.compareTo(BigDecimal.ZERO) <= 0){
-            throw new IllegalArgumentException("Transaction amount must be greater than zero");
+        try {
+            BigDecimal maximumDeposit = new BigDecimal("3000000");
+            BigDecimal maximumWithdraw = new BigDecimal("3000000");
+            BigDecimal minimumLimit = BigDecimal.ZERO;
+
+            if (transactions.compareTo(maximumDeposit) > 0) {
+                throw new IllegalArgumentException("maximum deposit around " + maximumDeposit);
+            }
+            if (transactions.compareTo(maximumWithdraw) > 0) {
+                throw new IllegalArgumentException("maximum withdrawal atm around " + maximumWithdraw);
+            }
+            if (transactions.compareTo(minimumLimit) <= 0) {
+                throw new IllegalArgumentException("Transaction amount must be greater than zero");
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
         }
     }
 
     public List<Account> accountLimiter(List<Account> accounts){
-        if(accounts.size() < 5){
-            throw new IllegalArgumentException("accounts should be atleast 5");
+        try {
+            if (accounts.size() < 5) {
+                throw new IllegalArgumentException("accounts should be atleast 5");
+            }
+            if (accounts.size() >= 10) {
+                System.err.println("regulations for initializing bank, to have 5 to 20 members only at first");
+                return accounts.stream().limit(10).toList();
+            }
+            return accounts;
+        } catch (Exception e){
+            System.err.println("Exception caught : " + e.getMessage());
+            throw e;
         }
-        if(accounts.size() >= 10){
-            System.err.println("regulations for initializing bank, to have 5 to 20 members only at first");
-            return accounts.stream().limit(10).toList();
-        }
-        return accounts;
     }
 
     public List<Branch> branchManager(List<Branch> branches){
-        if(branches.size() < 5){
-            throw new IllegalArgumentException("branches should be atleast 5");
-        }
-        for(Branch branch : branches){
-            if(branch.getAtms().isEmpty()){
-                throw new IllegalArgumentException("ATM should be atleast 5");
+        try {
+            if (branches.size() < 5) {
+                throw new IllegalArgumentException("branches should be atleast 5");
             }
-            if(branch.getAtms().size() < 5){
-                throw new IllegalArgumentException("regulations for initializing bank, to atleast have 5 atm each branch");
+            for (Branch branch : branches) {
+                if (branch.getAtms().isEmpty()) {
+                    throw new IllegalArgumentException("ATM should be atleast 5");
+                }
+                if (branch.getAtms().size() < 5) {
+                    throw new IllegalArgumentException("regulations for initializing bank, to atleast have 5 atm each branch");
+                }
             }
+            return branches;
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
         }
-        return branches;
     }
 }

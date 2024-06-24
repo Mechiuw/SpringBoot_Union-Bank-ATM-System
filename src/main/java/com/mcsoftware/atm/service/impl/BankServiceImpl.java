@@ -162,38 +162,44 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public BankResponse depositToAtm(String bankId, String atmId, BigDecimal depositFromRepo) {
-        Bank bank = bankRepository.findById(bankId)
-                .orElseThrow(() -> new NoSuchElementException("not found any bank"));
-        Branch branch = bank.getBranches().stream()
-                .filter(x -> x.getId().equals(atmId)).findFirst()
-                .orElseThrow(() -> new NoSuchElementException("not found any branch"));
-        ATM atm = branch.getAtms().stream()
-                .filter(x -> x.getId().equals(atmId)).findFirst()
-                .orElseThrow(() -> new NoSuchElementException("not found any bank"));
+        try {
+            Bank bank = bankRepository.findById(bankId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any bank"));
+            Branch branch = bank.getBranches().stream()
+                    .filter(x -> x.getId().equals(atmId)).findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("not found any branch"));
+            ATM atm = branch.getAtms().stream()
+                    .filter(x -> x.getId().equals(atmId)).findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("not found any bank"));
 
-        transactionsValidator(depositFromRepo);
-        if(atm != null){
-            BigDecimal deposit = atm.getCashBalance().add(depositFromRepo);
-            atm.setCashBalance(deposit);
-            BigDecimal withdrawBank = bank.getBankBalanceRepository().subtract(depositFromRepo);
-            bank.setBankBalanceRepository(withdrawBank);
+            transactionsValidator(depositFromRepo);
 
-            Bank save = bankRepository.save(bank);
-            return BankResponse.builder()
-                    .id(save.getId())
-                    .name(save.getName())
-                    .changesDeposit("atm balance : " + depositFromRepo + "+")
-                    .fromBank("bank repo balance : " + depositFromRepo + "-" )
-                    .bankRepo(save.getBankBalanceRepository())
-                    .build();
-        } else {
-            return BankResponse.builder()
-                    .id("-")
-                    .name("-")
-                    .changesDeposit("nothing changes, no atm detected")
-                    .fromBank("nothing changes, bank balance still normal")
-                    .bankRepo(bank.getBankBalanceRepository())
-                    .build();
+            if (atm != null) {
+                BigDecimal deposit = atm.getCashBalance().add(depositFromRepo);
+                atm.setCashBalance(deposit);
+                BigDecimal withdrawBank = bank.getBankBalanceRepository().subtract(depositFromRepo);
+                bank.setBankBalanceRepository(withdrawBank);
+
+                Bank save = bankRepository.save(bank);
+                return BankResponse.builder()
+                        .id(save.getId())
+                        .name(save.getName())
+                        .changesDeposit("atm balance : " + depositFromRepo + "+")
+                        .fromBank("bank repo balance : " + depositFromRepo + "-")
+                        .bankRepo(save.getBankBalanceRepository())
+                        .build();
+            } else {
+                return BankResponse.builder()
+                        .id("-")
+                        .name("-")
+                        .changesDeposit("nothing changes, no atm detected")
+                        .fromBank("nothing changes, bank balance still normal")
+                        .bankRepo(bank.getBankBalanceRepository())
+                        .build();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
         }
     }
 
@@ -251,6 +257,9 @@ public class BankServiceImpl implements BankService {
         }
         if(transactions.compareTo(maximumWithdraw) > 0){
             throw new IllegalArgumentException("maximum withdrawal atm around " + maximumWithdraw);
+        }
+        if(transactions.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("Transaction amount must be greater than zero");
         }
     }
 

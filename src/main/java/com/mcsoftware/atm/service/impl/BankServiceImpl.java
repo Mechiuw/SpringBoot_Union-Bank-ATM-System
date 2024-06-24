@@ -128,8 +128,19 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public List<Branch> listAllBranch() {
-        return null;
+    public List<Branch> listAllBranch(String bankId) {
+        try {
+            Bank bank = bankRepository.findById(bankId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any bank"));
+            if (!bank.getBranches().isEmpty()) {
+                return bank.getBranches();
+            } else {
+                throw new IllegalArgumentException("not found any branches");
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

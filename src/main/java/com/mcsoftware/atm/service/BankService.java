@@ -22,7 +22,7 @@ public interface BankService {
     void delete(String id);
 
     //TODO BUSINESS LOGIC SERVICE
-    List<Branch> listAllBranch();
+    List<Branch> listAllBranch(String bankId);
     List<ATM> listAllBranchAtms(String branchId);
 
     BankResponse depositToAtm(String bankId, String atmId, BigDecimal depositFromRepo);

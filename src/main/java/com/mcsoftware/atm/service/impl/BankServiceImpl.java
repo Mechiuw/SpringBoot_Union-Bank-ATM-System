@@ -9,9 +9,13 @@ import com.mcsoftware.atm.model.entity.Branch;
 import com.mcsoftware.atm.repository.BankRepository;
 import com.mcsoftware.atm.service.BankService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -25,15 +29,22 @@ public class BankServiceImpl implements BankService {
 
         List<Account> limitedAccounts = accountLimiter(bankRequest.getAccountList());
         List<Branch> branches = branchManager(bankRequest.getBranchList());
+        BigDecimal bankBalance = repositoryManager(bankRequest.getBankRepo());
         Bank bank = Bank.builder()
                 .name(bankRequest.getName())
                 .branches(branches)
                 .accountList(limitedAccounts)
-                .bankBalanceRepository(bankRequest.getBankRepo())
+                .bankBalanceRepository(bankBalance)
                 .build();
 
         Bank savedBank = bankRepository.saveAndFlush(bank);
-        return null;
+        return BankResponse.builder()
+                .id(savedBank.getId())
+                .name(savedBank.getName())
+                .branchList(savedBank.getBranches())
+                .accountList(savedBank.getAccountList())
+                .bankRepo(savedBank.getBankBalanceRepository())
+                .build();
     }
 
     @Override
@@ -94,11 +105,26 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public BigDecimal repositoryManager(BigDecimal balance) {
-        BigDecimal standart = new BigDecimal("100000000");
-        if(balance.compareTo(standart) < 0){
-            throw new IllegalArgumentException("");
+        BigDecimal standard = new BigDecimal("100000000");
+        BigDecimal tax = new BigDecimal("2500000");
+
+        if(balance.compareTo(standard) < 0){
+            throw new IllegalArgumentException("bank repository balance should atleast meet the minimum deposit: " + standard);
         }
-        return null;
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime timeToCompare = timeExecutor();
+        if(now.isAfter(timeToCompare)){
+            return balance.subtract(tax);
+        }
+
+        return balance;
+    }
+
+    public LocalDateTime timeExecutor(){
+        LocalDate nextYear = LocalDate.now().plusYears(1).withDayOfYear(1);
+        LocalTime afternoon = LocalTime.NOON;
+        return LocalDateTime.of(nextYear,afternoon);
     }
 
     @Override

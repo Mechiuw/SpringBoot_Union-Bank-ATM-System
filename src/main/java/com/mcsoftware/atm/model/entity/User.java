@@ -1,7 +1,11 @@
 package com.mcsoftware.atm.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,4 +28,9 @@ public class User {
 
     @Column(name = "phone_number",nullable = false)
     private String phoneNumber;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private List<Card> cardList;
 }

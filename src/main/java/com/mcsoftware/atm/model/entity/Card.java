@@ -1,5 +1,6 @@
 package com.mcsoftware.atm.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,11 +20,14 @@ public class Card {
     private String cardNumber;
     @Column(name = "pin",nullable = false)
     private String pin;
+
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "account_id")
     private Account account;
 }

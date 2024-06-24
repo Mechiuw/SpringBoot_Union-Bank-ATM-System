@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -49,12 +50,33 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public BankResponse getById(String id) {
-        return null;
+        Bank bank = bankRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("not found any bank with id : "+ id));
+        if(bank != null){
+            return BankResponse.builder()
+                    .id(bank.getId())
+                    .name(bank.getName())
+                    .bankRepo(bank.getBankBalanceRepository())
+                    .build();
+        } else {
+            throw new RuntimeException("Exception caught");
+        }
     }
 
     @Override
     public List<Bank> getAll() {
-        return null;
+        try {
+            List<Bank> banks = bankRepository.findAll();
+            if (banks.isEmpty()) {
+                System.err.println("not found any bank");
+                return Collections.emptyList();
+            } else {
+                return banks;
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

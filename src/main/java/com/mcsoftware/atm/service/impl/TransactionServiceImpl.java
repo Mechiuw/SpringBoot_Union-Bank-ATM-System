@@ -7,21 +7,23 @@ import com.mcsoftware.atm.model.dto.response.TransactionResponse;
 import com.mcsoftware.atm.model.entity.*;
 import com.mcsoftware.atm.repository.*;
 import com.mcsoftware.atm.service.TransactionService;
-import jakarta.transaction.RollbackException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-@Transactional(rollbackOn = RollbackException.class)
+@Transactional(rollbackOn = {Exception.class, RuntimeException.class})
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
+    private final List<TransactionResponse> transactionsHistory;
     private final TransactionRepository transactionRepository;
     private final CardRepository cardRepository;
     private final ATMRepository atmRepository;
@@ -61,8 +63,7 @@ public class TransactionServiceImpl implements TransactionService {
         Account savedAccount = accountRepository.saveAndFlush(validatedAccount);
         ATM savedAtm = atmRepository.saveAndFlush(atm);
 
-
-        Transaction transaction = Transaction.builder()
+        Transaction finalTransaction = Transaction.builder()
                 .atm(savedAtm)
                 .transactionDate(timeTrx)
                 .amount(amount)
@@ -71,11 +72,10 @@ public class TransactionServiceImpl implements TransactionService {
                 .card(validatedCard)
                 .bank(bank)
                 .build();
-
-        if(transaction != null) {
             try {
-                Transaction validatedTransaction = validateTransaction(transaction);
-                return TransactionResponse.builder()
+                Transaction validatedTransaction = validateTransaction(finalTransaction);
+                transactionRepository.saveAndFlush(validatedTransaction);
+                TransactionResponse response = TransactionResponse.builder()
                         .id(validatedTransaction.getId())
                         .atm(validatedTransaction.getAtm())
                         .localDate(validatedTransaction.getTransactionDate())
@@ -85,20 +85,22 @@ public class TransactionServiceImpl implements TransactionService {
                         .bank(validatedTransaction.getBank().getId())
                         .card(validatedTransaction.getCard().getId())
                         .build();
+
+                transactionsHistory.add(response);
+
+                return response;
             } catch (Exception e) {
-                trxRollback(e);
+                return TransactionResponse.builder()
+                        .id("not found || rolling back...")
+                        .atm(null)
+                        .localDate(null)
+                        .amount(BigDecimal.ZERO)
+                        .type(null)
+                        .account("not found account || rolling back...")
+                        .bank("not found bank || rolling back...")
+                        .card("not found card || rolling back...")
+                        .build();
             }
-        }
-            return TransactionResponse.builder()
-                    .id("not found")
-                    .atm(null)
-                    .localDate(null)
-                    .amount(BigDecimal.ZERO)
-                    .type(null)
-                    .account("not found account")
-                    .bank("not found bank")
-                    .card("not found card")
-                    .build();
     }
 
     @Override
@@ -123,7 +125,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionResponse> getAllTransactionHistory() {
-        return null;
+        try {
+            if(!transactionsHistory.isEmpty()){
+                return transactionsHistory;
+            } else {
+                return Collections.emptyList();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
 
@@ -139,11 +150,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void trxTransfer(Transaction transaction) {
-
-    }
-
-    @Override
-    public void trxRollback(Exception e) {
 
     }
 

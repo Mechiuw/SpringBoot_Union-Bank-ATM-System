@@ -28,7 +28,6 @@ public interface TransactionService {
     void trxDeposit(Transaction transaction);
     void trxWithdrawal(Transaction transaction);
     void trxTransfer(Transaction transaction);
-    void trxRollback(Exception e);
     BigDecimal arrangeAmount(BigDecimal amount,TransactionType type,BigDecimal atmBalance);
     BigDecimal arrangeBalanceAtm(ATM atm, BigDecimal amount);
 

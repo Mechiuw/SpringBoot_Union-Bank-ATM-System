@@ -177,7 +177,31 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public UserResponse retrieveCard(String cardId, String userId) {
-        return null;
+        try {
+            Card card = cardRepository.findById(cardId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any card with id "+cardId));
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any user with id " + userId));
+
+            if(user.getId().equals(userId)){
+                return UserResponse.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .phoneNumber(user.getPhoneNumber())
+                        .build();
+            } else {
+                return UserResponse.builder()
+                        .id("not found user id")
+                        .name("not found user's name ")
+                        .email("not found user's email")
+                        .phoneNumber("not found user's phone number")
+                        .build();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

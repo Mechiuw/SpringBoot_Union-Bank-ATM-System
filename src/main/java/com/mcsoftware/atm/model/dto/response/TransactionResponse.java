@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,11 +18,10 @@ import java.time.LocalDateTime;
 public class TransactionResponse {
     private String id;
     private ATM atm;
-    private LocalDateTime localDateTime;
+    private LocalDate localDate;
     private BigDecimal amount;
     private TransactionType type;
-    private Bank bank;
-    private Card card;
-    private Account account;
-    private TrxFee trxFee;
+    private String bank;
+    private String card;
+    private String account;
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -29,7 +30,7 @@ public class Transaction {
     private ATM atm;
 
     @Column(name = "transaction_date",nullable = false)
-    private LocalDateTime transactionDate;
+    private LocalDate transactionDate;
 
     @Column(name = "amount",nullable = false)
     private BigDecimal amount;
@@ -56,10 +57,5 @@ public class Transaction {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Card card;
 
-    @OneToOne
-    @JoinColumn(name = "trx_fee_id",referencedColumnName = "id")
-    @JsonBackReference
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private TrxFee trxFee;
 
 }

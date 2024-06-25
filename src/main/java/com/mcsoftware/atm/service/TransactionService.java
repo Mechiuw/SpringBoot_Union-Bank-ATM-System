@@ -3,10 +3,10 @@ package com.mcsoftware.atm.service;
 import com.mcsoftware.atm.constant.TransactionType;
 import com.mcsoftware.atm.model.dto.request.TransactionRequest;
 import com.mcsoftware.atm.model.dto.response.TransactionResponse;
+import com.mcsoftware.atm.model.entity.ATM;
 import com.mcsoftware.atm.model.entity.Account;
 import com.mcsoftware.atm.model.entity.Card;
 import com.mcsoftware.atm.model.entity.Transaction;
-import com.mcsoftware.atm.model.entity.TrxFee;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,7 +22,6 @@ public interface TransactionService {
     //BUSINESS LOGIC SERVICE
     TransactionResponse softDelete(String id);
     List<TransactionResponse> getAllTransactionHistory();
-    List<TrxFee> getAllTransactionFee();
 
     //HELPER SERVICE
     //TRX MANAGER
@@ -30,12 +29,12 @@ public interface TransactionService {
     void trxWithdrawal(Transaction transaction);
     void trxTransfer(Transaction transaction);
     void trxRollback(Exception e);
-    BigDecimal arrangeAmount(BigDecimal amount,TransactionType type);
+    BigDecimal arrangeAmount(BigDecimal amount,TransactionType type,BigDecimal atmBalance);
+    BigDecimal arrangeBalanceAtm(ATM atm, BigDecimal amount);
 
     //VALIDATORS
-    void validateTransaction(Transaction transaction);
-    void validateCard(Card card);
-    void validateAccount(Account account);
-    void validateBalance(BigDecimal balance);
-    void validateTrxType(TransactionType type);
+    Transaction validateTransaction(Transaction transaction);
+    Card validateCard(Card card,Account account);
+    Account validateAccount(Account account);
+    BigDecimal validateBalance(BigDecimal balance);
 }

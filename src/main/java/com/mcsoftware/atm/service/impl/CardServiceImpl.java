@@ -148,8 +148,31 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public CardResponse blockCard(CardRequest cardRequest) {
-        return null;
+    public CardResponse blockCard(String cardId) {
+        try {
+            Card card = cardRepository.findById(cardId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any card"));
+            if(card != null) {
+                card.setCardNumber("BLOCKED");
+                card.setPin("BLOCKED");
+                Card updatedCard = cardRepository.saveAndFlush(card);
+                return CardResponse.builder()
+                        .id(updatedCard.getId())
+                        .cardNumber(updatedCard.getCardNumber())
+                        .pin(updatedCard.getPin())
+                        .user(updatedCard.getUser().getId())
+                        .account(updatedCard.getAccount().getId())
+                        .build();
+            } else {
+                return CardResponse.builder()
+                        .id("not found card id")
+                        .cardNumber("not found card number")
+                        .build();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

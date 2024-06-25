@@ -16,7 +16,7 @@ public interface CardService {
     void delete(String id);
 
     //BUSINESS LOGIC SERVICE
-    CardResponse blockCard(CardRequest cardRequest);
+    CardResponse blockCard(String cardId);
     UserResponse retrieveCard(String cardId, String userId);
     CardResponse updatePin(String cardId);
 }

@@ -205,7 +205,28 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public CardResponse updatePin(String cardId) {
-        return null;
+    public CardResponse updatePin(String cardId,CardRequest cardRequest) {
+        try {
+            Card card = cardRepository.findById(cardId)
+                    .orElseThrow(() -> new NoSuchElementException("not found any card"));
+            if (card.getPin() != null) {
+                card.setPin(cardRequest.getPin());
+                Card updatedPinCard = cardRepository.saveAndFlush(card);
+                return CardResponse.builder()
+                        .id(updatedPinCard.getId())
+                        .cardNumber(updatedPinCard.getCardNumber())
+                        .pin(updatedPinCard.getPin())
+                        .build();
+            } else {
+                return CardResponse.builder()
+                        .id("not found card id")
+                        .cardNumber("not found card number")
+                        .pin("not updated card pin")
+                        .build();
+            }
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 }

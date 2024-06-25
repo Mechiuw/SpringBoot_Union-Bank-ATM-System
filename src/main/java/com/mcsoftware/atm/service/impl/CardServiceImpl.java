@@ -2,7 +2,6 @@ package com.mcsoftware.atm.service.impl;
 
 import com.mcsoftware.atm.model.dto.request.CardRequest;
 import com.mcsoftware.atm.model.dto.response.CardResponse;
-import com.mcsoftware.atm.model.dto.response.UserResponse;
 import com.mcsoftware.atm.model.entity.Account;
 import com.mcsoftware.atm.model.entity.Card;
 import com.mcsoftware.atm.model.entity.User;

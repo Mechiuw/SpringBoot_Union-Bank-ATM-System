@@ -38,9 +38,40 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType type; // e.g., "withdrawal", "deposit", "transfer"
 
+    @OneToOne
+    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    @JsonBackReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private User user;
+
     @ManyToOne
     @JoinColumn(name = "account_id",referencedColumnName = "id")
     @JsonBackReference
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Account account;
+
+    @OneToOne
+    @JoinColumn(name = "bank_id",referencedColumnName = "id")
+    @JsonBackReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Bank bank;
+
+    @OneToOne
+    @JoinColumn(name = "card_id",referencedColumnName = "id")
+    @JsonBackReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Card card;
+
+    @OneToOne
+    @JoinColumn(name = "branch_id",referencedColumnName = "id")
+    @JsonBackReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Branch branch;
+
+    @OneToOne
+    @JoinColumn(name = "trx_fee_id",referencedColumnName = "id")
+    @JsonBackReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private TrxFee trxFee;
+
 }

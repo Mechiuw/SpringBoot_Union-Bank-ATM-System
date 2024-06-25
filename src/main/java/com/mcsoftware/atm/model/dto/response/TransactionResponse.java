@@ -1,11 +1,14 @@
 package com.mcsoftware.atm.model.dto.response;
 
+import com.mcsoftware.atm.constant.TransactionType;
+import com.mcsoftware.atm.model.entity.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -13,9 +16,12 @@ import java.math.BigDecimal;
 @Builder(toBuilder = true)
 public class TransactionResponse {
     private String id;
-    private String atm;
-    private String localDateTime;
+    private ATM atm;
+    private LocalDateTime localDateTime;
     private BigDecimal amount;
-    private String type;
-    private String account;
+    private TransactionType type;
+    private Bank bank;
+    private Card card;
+    private Account account;
+    private TrxFee trxFee;
 }

@@ -1,8 +1,7 @@
 package com.mcsoftware.atm.model.dto.request;
 
 import com.mcsoftware.atm.constant.TransactionType;
-import com.mcsoftware.atm.model.entity.ATM;
-import com.mcsoftware.atm.model.entity.Account;
+import com.mcsoftware.atm.model.entity.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +20,8 @@ public class TransactionRequest {
     private LocalDateTime localDateTime;
     private BigDecimal amount;
     private TransactionType type;
+    private Bank bank;
+    private Card card;
     private Account account;
+    private TrxFee trxFee;
 }

@@ -16,12 +16,14 @@ Security: Comprehensive security measures, including encryption and secure authe
 RESTful APIs: Efficient and well-documented RESTful APIs facilitate seamless communication between the server and client applications.
 
 # Kotlin Android Application:
+### *UPCOMING STACK*
 
 User-Friendly Interface: The Kotlin-based Android application offers an intuitive and responsive interface, making banking transactions quick and easy.
 Real-Time Updates: Customers receive real-time notifications and updates on their transactions, balances, and account activities.
 Enhanced Security: Advanced security features, including biometric authentication and two-factor authentication (2FA), ensure the safety of user accounts.
 
 # Angular Website:
+### *UPCOMING STACK*
 
 Interactive Web Experience: The Angular-based website provides a dynamic and engaging user experience with smooth navigation and fast loading times.
 Cross-Platform Compatibility: Optimized for various devices and screen sizes, our website ensures a consistent experience across desktops, tablets, and mobile devices.

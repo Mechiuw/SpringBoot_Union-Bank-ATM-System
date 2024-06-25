@@ -23,9 +23,6 @@ public class TrxFee {
     @Enumerated(EnumType.STRING)
     private EFeeCategory feeCategory;
 
-    @Column(name = "cost",nullable = false)
-    private BigDecimal cost;
-
     @Column(name = "regulations",nullable = false)
     private String regulations;
 }

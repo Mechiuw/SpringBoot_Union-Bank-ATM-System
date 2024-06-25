@@ -1,5 +1,6 @@
 package com.mcsoftware.atm.service;
 
+import com.mcsoftware.atm.constant.TransactionType;
 import com.mcsoftware.atm.model.dto.request.TransactionRequest;
 import com.mcsoftware.atm.model.dto.response.TransactionResponse;
 import com.mcsoftware.atm.model.entity.Account;
@@ -29,10 +30,12 @@ public interface TransactionService {
     void trxWithdrawal(Transaction transaction);
     void trxTransfer(Transaction transaction);
     void trxRollback(Exception e);
+    BigDecimal arrangeAmount(BigDecimal amount,TransactionType type);
 
     //VALIDATORS
     void validateTransaction(Transaction transaction);
     void validateCard(Card card);
     void validateAccount(Account account);
     void validateBalance(BigDecimal balance);
+    void validateTrxType(TransactionType type);
 }

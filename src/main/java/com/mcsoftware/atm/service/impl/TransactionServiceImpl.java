@@ -150,16 +150,14 @@ public class TransactionServiceImpl implements TransactionService {
         if (type == TransactionType.DEPOSIT || type == TransactionType.TRANSFER || type == TransactionType.WITHDRAWAL) {
             if (amount.compareTo(MICRO_RANGE) < 0) {
                 return amount.subtract(MICRO_FEE);
-            } else if (amount.compareTo(STANDARD_RANGE) < 0) {
+            } else if (amount.compareTo(STANDARD_RANGE) <= 0 ) {
                 return amount.subtract(STANDARD_FEE);
-            } else if (amount.compareTo(EXCESSIVE_RANGE) < 0) {
+            } else if (amount.compareTo(EXCESSIVE_RANGE) <= 0) {
                 return amount.subtract(EXCESSIVE_FEE);
             } else {
-                // Handle amounts larger than excessive range
-                throw new IllegalArgumentException("Amount exceeds excessive range");
+                return amount.subtract(EXCESSIVE_FEE);
             }
         } else {
-            // Handle unknown transaction types
             throw new IllegalArgumentException("Unsupported transaction type: " + type);
         }
     }

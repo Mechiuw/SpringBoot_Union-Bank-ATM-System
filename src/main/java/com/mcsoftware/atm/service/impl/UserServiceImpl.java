@@ -130,7 +130,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse blockUser(String id) {
-        return null;
+        User findUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("not found any user"));
+        if(findUser != null){
+            findUser.setName("BLOCKED");
+            findUser.setEmail("BLOCKED");
+            findUser.setPhoneNumber("BLOCKED");
+            User updatedUser = userRepository.saveAndFlush(findUser);
+            return UserResponse.builder()
+                    .id(updatedUser.getId())
+                    .name(updatedUser.getName())
+                    .email(updatedUser.getEmail())
+                    .phoneNumber(updatedUser.getPhoneNumber())
+                    .build();
+        } else {
+            return UserResponse.builder()
+                    .id("not found user id")
+                    .name("not found user name")
+                    .email("not found user email")
+                    .phoneNumber("not found user phone number")
+                    .build();
+        }
     }
 
     @Override

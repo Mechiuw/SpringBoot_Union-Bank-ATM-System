@@ -1,6 +1,7 @@
 package com.mcsoftware.atm.service;
 
 import com.mcsoftware.atm.model.dto.request.BankRequest;
+import com.mcsoftware.atm.model.dto.response.AccountResponse;
 import com.mcsoftware.atm.model.dto.response.BankResponse;
 import com.mcsoftware.atm.model.dto.response.BranchResponse;
 import com.mcsoftware.atm.model.entity.ATM;
@@ -35,4 +36,9 @@ public interface BankService {
     void transactionsValidator(BigDecimal transactions);
     List<Account> accountLimiter(List<Account> accounts);
     List<Branch> branchManager(List<Branch> branches);
+    BigDecimal feeRegulateBank(BigDecimal amount);
+
+    //USER SERVICE (BIG AMOUNT)
+    AccountResponse requestToDeposit(Account account, BigDecimal amount);
+    AccountResponse requestToWithdraw(Account account,BigDecimal amount);
 }

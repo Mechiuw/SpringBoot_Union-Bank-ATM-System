@@ -1,12 +1,15 @@
 package com.mcsoftware.atm.service.impl;
 
+import com.mcsoftware.atm.constant.EFeeCategory;
 import com.mcsoftware.atm.model.dto.request.BankRequest;
+import com.mcsoftware.atm.model.dto.response.AccountResponse;
 import com.mcsoftware.atm.model.dto.response.BankResponse;
 import com.mcsoftware.atm.model.entity.ATM;
 import com.mcsoftware.atm.model.entity.Account;
 import com.mcsoftware.atm.model.entity.Bank;
 import com.mcsoftware.atm.model.entity.Branch;
 import com.mcsoftware.atm.repository.ATMRepository;
+import com.mcsoftware.atm.repository.AccountRepository;
 import com.mcsoftware.atm.repository.BankRepository;
 import com.mcsoftware.atm.repository.BranchRepository;
 import com.mcsoftware.atm.service.BankService;
@@ -27,6 +30,8 @@ public class BankServiceImpl implements BankService {
     private final BankRepository bankRepository;
     private final ATMRepository atmRepository;
     private final BranchRepository branchRepository;
+    private final AccountRepository accountRepository;
+    private final EFeeCategory eFeeCategory;
     @Override
     public BankResponse create(BankRequest bankRequest) {
 
@@ -362,5 +367,43 @@ public class BankServiceImpl implements BankService {
             System.err.println(e.getMessage());
             throw e;
         }
+    }
+
+    @Override
+    public BigDecimal feeRegulateBank(BigDecimal amount) {
+        if(amount.compareTo(eFeeCategory.getSTANDARD_RANGE()) <= 0){
+            return amount.subtract(eFeeCategory.STANDARD_FEE);
+        }
+        return amount.subtract(eFeeCategory.EXCESSIVE_FEE);
+    }
+
+    @Override
+    public AccountResponse requestToDeposit(Account account, BigDecimal amount) {
+        Account findAccount = accountRepository.findById(account.getId())
+                .orElseThrow(() -> new NoSuchElementException("not found any account"));
+        BigDecimal amountWithFee = feeRegulateBank(amount);
+        findAccount.setBalance(amountWithFee);
+        Account saveAccount = accountRepository.saveAndFlush(findAccount);
+        return AccountResponse.builder()
+                .id(saveAccount.getId())
+                .accountNumber(saveAccount.getAccountNumber())
+                .userId(saveAccount.getUser().getId())
+                .balance(saveAccount.getBalance())
+                .build();
+    }
+
+    @Override
+    public AccountResponse requestToWithdraw(Account account, BigDecimal amount) {
+        Account findAccount = accountRepository.findById(account.getId())
+                .orElseThrow(() -> new NoSuchElementException("not found any account"));
+        BigDecimal amountWithFee = feeRegulateBank(amount);
+        findAccount.setBalance(amountWithFee);
+        Account saveAccount = accountRepository.saveAndFlush(findAccount);
+        return AccountResponse.builder()
+                .id(saveAccount.getId())
+                .accountNumber(saveAccount.getAccountNumber())
+                .userId(saveAccount.getUser().getId())
+                .balance(saveAccount.getBalance())
+                .build();
     }
 }

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class CardRequest {
-    private String cardNumber;
+    private String pin;
     private User user;
     private Account account;
 }

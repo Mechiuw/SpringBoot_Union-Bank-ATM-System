@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -21,7 +22,7 @@ import java.util.NoSuchElementException;
 @Transactional(rollbackOn = {Exception.class, RuntimeException.class})
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
-    private final List<TransactionResponse> transactionsHistory;
+    private final List<TransactionResponse> transactionsHistory = Collections.synchronizedList(new ArrayList<>());
     private final TransactionRepository transactionRepository;
     private final CardRepository cardRepository;
     private final ATMRepository atmRepository;
@@ -103,12 +104,44 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TransactionResponse getById(String id) {
-        return null;
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("not found such transactions"));
+        if(transaction != null){
+            return TransactionResponse.builder()
+                    .id(transaction.getId())
+                    .atm(transaction.getAtm())
+                    .localDate(transaction.getTransactionDate())
+                    .amount(transaction.getAmount())
+                    .type(transaction.getType())
+                    .account(transaction.getAccount().getId())
+                    .bank(transaction.getBank().getId())
+                    .card(transaction.getCard().getId())
+                    .build();
+        } else {
+            return TransactionResponse.builder()
+                    .id("not found || rolling back...")
+                    .atm(null)
+                    .localDate(null)
+                    .amount(BigDecimal.ZERO)
+                    .type(null)
+                    .account("not found account || rolling back...")
+                    .bank("not found bank || rolling back...")
+                    .card("not found card || rolling back...")
+                    .build();
+        }
     }
 
     @Override
-    public TransactionResponse getAll() {
-        return null;
+    public List<Transaction> getAll() {
+        try {
+            if(!transactionRepository.findAll().isEmpty()){
+                return transactionRepository.findAll();
+            }
+            return Collections.emptyList();
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

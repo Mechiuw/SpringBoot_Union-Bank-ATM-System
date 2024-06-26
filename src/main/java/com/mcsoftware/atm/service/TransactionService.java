@@ -16,7 +16,7 @@ public interface TransactionService {
     //CRUD SERVICE
     TransactionResponse create(TransactionRequest transactionRequest);
     TransactionResponse getById(String id);
-    TransactionResponse getAll();
+    List<Transaction> getAll();
     TransactionResponse update(String id, TransactionRequest transactionRequest);
 
     //BUSINESS LOGIC SERVICE

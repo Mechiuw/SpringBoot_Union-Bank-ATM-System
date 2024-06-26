@@ -74,7 +74,8 @@ public class UserServiceImpl implements UserService {
             user.setName(userRequest.getName());
             user.setEmail(userRequest.getEmail());
             user.setPhoneNumber(userRequest.getPhoneNumber());
-            User updatedUser = userRepository.saveAndFlush(user);
+            User validatedUser = validateUser(user);
+            User updatedUser = userRepository.saveAndFlush(validatedUser);
 
             return UserResponse.builder()
                     .id(updatedUser.getId())

@@ -26,7 +26,8 @@ public class UserServiceImpl implements UserService {
                 .email(userRequest.getEmail())
                 .phoneNumber(userRequest.getPhoneNumber())
                 .build();
-        User savedUser = userRepository.save(user);
+        User validatedUser = validateUser(user);
+        User savedUser = userRepository.save(validatedUser);
         return UserResponse.builder()
                 .id(savedUser.getId())
                 .name(savedUser.getName())
@@ -155,6 +156,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User validateUser(User user) {
-        return null;
+        if (user.getName() == null) {
+            throw new IllegalArgumentException("Exception caught : user name is null");
+        }
+        if (user.getEmail() == null) {
+            throw new IllegalArgumentException("Exception caught : user name is null");
+        }
+        if (user.getPhoneNumber() == null) {
+            throw new IllegalArgumentException("Exception caught : user name is null");
+        } else {
+            return user;
+        }
     }
 }

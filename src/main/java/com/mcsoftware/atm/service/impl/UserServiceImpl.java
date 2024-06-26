@@ -9,6 +9,7 @@ import com.mcsoftware.atm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -56,8 +57,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll(UserRequest userRequest) {
-        return null;
+    public List<User> getAll() {
+        if(!userRepository.findAll().isEmpty()){
+            return userRepository.findAll();
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override

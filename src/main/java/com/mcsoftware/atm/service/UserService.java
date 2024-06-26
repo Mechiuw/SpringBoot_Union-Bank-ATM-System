@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserService {
     UserResponse create(UserRequest userRequest);
     UserResponse getById(String id);
-    List<User> getAll(UserRequest userRequest);
+    List<User> getAll();
     UserResponse update(String id, UserRequest userRequest);
     void delete(String id);
     UserResponse softDelete(String id);

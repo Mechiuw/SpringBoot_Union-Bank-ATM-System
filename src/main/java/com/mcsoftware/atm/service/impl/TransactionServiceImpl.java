@@ -6,8 +6,6 @@ import com.mcsoftware.atm.model.dto.request.TransactionRequest;
 import com.mcsoftware.atm.model.dto.response.TransactionResponse;
 import com.mcsoftware.atm.model.entity.*;
 import com.mcsoftware.atm.repository.*;
-import com.mcsoftware.atm.service.ATMService;
-import com.mcsoftware.atm.service.AccountService;
 import com.mcsoftware.atm.service.TransactionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -54,10 +52,6 @@ public class TransactionServiceImpl implements TransactionService {
         BigDecimal userBalance = validateBalance(fetchBalance); // validate balance from the fetchBalance
         BigDecimal userBalanceWithFee = arrangeAmount(amount,trxType,userBalance); // this is user balance with fee , changed previous validated-fetch balance with fee
         BigDecimal changedAtmBalance = arrangeBalanceAtm(atm,amount);  // this is atm balance added from amount
-
-        //ASSERTS
-        assert atm != null :"cannot find any atm"; //assure atm is not null
-        assert bank != null : "cannot find any bank"; //assure bank is not null
 
         //UPDATE DATA
         account.setBalance(userBalanceWithFee); // to update the user balance
@@ -164,9 +158,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction validateTransaction(Transaction transaction) {
-        if(transaction.getId() == null){
-            throw new IllegalArgumentException("can't process transaction id is null");
-        }
         if(transaction.getAtm() == null){
             throw new IllegalArgumentException("can't process transaction atm is null");
         }

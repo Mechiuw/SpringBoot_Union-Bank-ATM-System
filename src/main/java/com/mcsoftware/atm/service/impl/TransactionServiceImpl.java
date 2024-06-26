@@ -50,21 +50,24 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new NoSuchElementException("not found any card"));
 
         //VALIDATE DATA
-        Account validatedAccount = validateAccount(account);
-        BigDecimal fetchBalance = validatedAccount.getBalance();
-        Card validatedCard = validateCard(card,account);
-        BigDecimal userBalance = validateBalance(fetchBalance);
-        BigDecimal userBalanceWithFee = arrangeAmount(amount,trxType,userBalance);
-        assert atm != null :"cannot find any atm";
-        assert bank != null : "cannot find any bank";
+        Account validatedAccount = validateAccount(account); // validate account
+        BigDecimal fetchBalance = validatedAccount.getBalance(); // fetch balance from validated account
+        Card validatedCard = validateCard(card,account); // validate card
+        BigDecimal userBalance = validateBalance(fetchBalance); // validate balance from the fetchBalance
+        BigDecimal userBalanceWithFee = arrangeAmount(amount,trxType,userBalance); // this is user balance with fee , changed previous validated-fetch balance with fee
+        BigDecimal changedAtmBalance = arrangeBalanceAtm(atm,amount);  // this is atm balance added from amount
 
+        //ASSERTS
+        assert atm != null :"cannot find any atm"; //assure atm is not null
+        assert bank != null : "cannot find any bank"; //assure bank is not null
 
-        BigDecimal changedAtmBalance = arrangeBalanceAtm(atm,amount);
-        account.setBalance(userBalanceWithFee);
-        atm.setCashBalance(changedAtmBalance);
+        //UPDATE DATA
+        account.setBalance(userBalanceWithFee); // to update the user balance
+        atm.setCashBalance(changedAtmBalance); // to update the atm balance
 
-        Account savedAccount = accountRepository.saveAndFlush(validatedAccount);
-        ATM savedAtm = atmRepository.saveAndFlush(atm);
+        //SAVE DATA
+        Account savedAccount = accountRepository.saveAndFlush(validatedAccount); // to save the user/account balance
+        ATM savedAtm = atmRepository.saveAndFlush(atm); // to save the atm balance
 
         Transaction finalTransaction = Transaction.builder()
                 .atm(savedAtm)
@@ -75,19 +78,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .card(validatedCard)
                 .bank(bank)
                 .build();
-        if(finalTransaction != null) {
-            if (trxType.equals(TransactionType.DEPOSIT)) {
-                trxDeposit(finalTransaction);
-            }
-            if (trxType.equals(TransactionType.WITHDRAWAL)) {
-                trxWithdrawal(finalTransaction);
-            }
-            if (trxType.equals(TransactionType.TRANSFER)) {
-                trxTransfer(transactionRequest.getToTransferId(), finalTransaction);
-            }
-        } else {
-            throw new IllegalArgumentException("error caught while transaction || Rolling back . . .");
-        }
         try {
                 Transaction validatedTransaction = validateTransaction(finalTransaction);
                 transactionRepository.saveAndFlush(validatedTransaction);
@@ -175,28 +165,6 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     @Override
-    public void trxDeposit(Transaction transaction) {
-        //ATM balance changed
-        //Account balance changed
-        atmService.deposit(transaction.getAtm().getId(),transaction.getAmount());
-        accountService.depositBalance(transaction.getAccount().getId(),transaction.getAmount());
-    }
-
-    @Override
-    public void trxWithdrawal(Transaction transaction) {
-        atmService.withdraw(transaction.getAtm().getId(),transaction.getAmount());
-        accountService.withdrawBalance(transaction.getAccount().getId(),transaction.getAmount());
-    }
-
-    @Override
-    public void trxTransfer(String transferId,Transaction transaction) {
-        accountService.transferBalance(
-                transaction.getAccount().getId(),
-                transferId,
-                transaction.getAmount());
-    }
-
-    @Override
     public Transaction validateTransaction(Transaction transaction) {
         if(transaction.getId() == null){
             throw new IllegalArgumentException("can't process transaction id is null");
@@ -266,9 +234,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public BigDecimal arrangeAmount(BigDecimal amount,TransactionType type,BigDecimal atmBalance) {
         try {
-            BigDecimal MICRO_FEE = eFeeCategory.MICRO_FEE;
-            BigDecimal STANDARD_FEE = eFeeCategory.STANDARD_FEE;
-            BigDecimal EXCESSIVE_FEE = eFeeCategory.EXCESSIVE_FEE;
+            final BigDecimal MICRO_FEE = eFeeCategory.MICRO_FEE;
+            final BigDecimal STANDARD_FEE = eFeeCategory.STANDARD_FEE;
+            final BigDecimal EXCESSIVE_FEE = eFeeCategory.EXCESSIVE_FEE;
 
             final BigDecimal MICRO_RANGE = eFeeCategory.MICRO_RANGE;
             final BigDecimal STANDARD_RANGE = eFeeCategory.STANDARD_RANGE;

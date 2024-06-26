@@ -146,7 +146,32 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TransactionResponse update(String id, TransactionRequest transactionRequest) {
-        return null;
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("not found such transactions"));
+        if(transaction != null && transactionRequest != null){
+            transaction.setAtm(transactionRequest.getAtm());
+            transaction.setTransactionDate(transactionRequest.getLocalDate());
+            transaction.setAmount(transactionRequest.getAmount());
+            transaction.setType(transactionRequest.getType());
+            transaction.setAccount(transactionRequest.getAccount());
+            transaction.setBank(transactionRequest.getBank());
+            transaction.setCard(transactionRequest.getCard());
+
+            Transaction savedTransaction = transactionRepository.saveAndFlush(transaction);
+
+            return TransactionResponse.builder()
+                    .id(savedTransaction.getId())
+                    .atm(savedTransaction.getAtm())
+                    .localDate(savedTransaction.getTransactionDate())
+                    .amount(savedTransaction.getAmount())
+                    .type(savedTransaction.getType())
+                    .account(savedTransaction.getAccount().getId())
+                    .bank(savedTransaction.getBank().getId())
+                    .card(savedTransaction.getCard().getId())
+                    .build();
+        } else {
+            throw new NoSuchElementException("transaction not found || transaction request not found");
+        }
     }
 
     @Override

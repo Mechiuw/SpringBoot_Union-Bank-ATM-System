@@ -6,6 +6,8 @@ import com.mcsoftware.atm.model.dto.request.TransactionRequest;
 import com.mcsoftware.atm.model.dto.response.TransactionResponse;
 import com.mcsoftware.atm.model.entity.*;
 import com.mcsoftware.atm.repository.*;
+import com.mcsoftware.atm.service.ATMService;
+import com.mcsoftware.atm.service.AccountService;
 import com.mcsoftware.atm.service.TransactionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,8 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountRepository accountRepository;
     private final BankRepository bankRepository;
     private final EFeeCategory eFeeCategory;
+    private final ATMService atmService;
+    private final AccountService accountService;
 
     @Override
     public TransactionResponse create(TransactionRequest transactionRequest) {
@@ -120,7 +124,27 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TransactionResponse softDelete(String id) {
-        return null;
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("not found any transaction"));
+        transaction.setAtm(null);
+        transaction.setTransactionDate(null);
+        transaction.setAmount(BigDecimal.ZERO);
+        transaction.setType(null);
+        transaction.setAccount(null);
+        transaction.setBank(null);
+        transaction.setCard(null);
+
+        Transaction softDelete = transactionRepository.saveAndFlush(transaction);
+        return TransactionResponse.builder()
+                .id(softDelete.getId())
+                .atm(softDelete.getAtm())
+                .localDate(softDelete.getTransactionDate())
+                .amount(softDelete.getAmount())
+                .type(softDelete.getType())
+                .account(softDelete.getAccount().getId())
+                .bank(softDelete.getBank().getId())
+                .card(softDelete.getCard().getId())
+                .build();
     }
 
     @Override
@@ -140,12 +164,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void trxDeposit(Transaction transaction) {
-
+        //ATM balance changed
+        //Account balance changed
+        atmService.deposit(transaction.getAtm().getId(),transaction.getAmount());
+        accountService.depositBalance(transaction.getAccount().getId(),transaction.getAmount());
     }
 
     @Override
     public void trxWithdrawal(Transaction transaction) {
-
+        atmService.withdraw(transaction.getAtm().getId(),transaction.getAmount());
+        accountService.withdrawBalance(transaction.getAccount().getId(),transaction.getAmount());
     }
 
     @Override

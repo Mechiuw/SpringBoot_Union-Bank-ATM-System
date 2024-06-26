@@ -34,9 +34,11 @@ public class CardServiceImpl implements CardService {
             assert user != null : "error user not found";
             assert account != null : "account user not found";
 
+            String pinNum = account.getAccountNumber();
+
             Card card = Card.builder()
                     .cardNumber(cardRequest.getCardNumber())
-                    .pin(cardRequest.getPin())
+                    .pin(pinNum)
                     .user(user)
                     .account(account)
                     .build();

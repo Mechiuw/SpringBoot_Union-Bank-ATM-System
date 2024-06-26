@@ -93,7 +93,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(String id) {
-
+        try{
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("not found any user"));
+            userRepository.delete(user);
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
     }
 
     @Override

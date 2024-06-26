@@ -177,8 +177,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void trxTransfer(Transaction transaction) {
-
+    public void trxTransfer(String transferId,Transaction transaction) {
+        accountService.transferBalance(
+                transaction.getAccount().getId(),
+                transferId,
+                transaction.getAmount());
     }
 
     @Override

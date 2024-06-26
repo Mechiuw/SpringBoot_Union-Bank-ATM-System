@@ -11,8 +11,6 @@ import com.mcsoftware.atm.service.AccountService;
 import com.mcsoftware.atm.service.TransactionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -60,6 +58,7 @@ public class TransactionServiceImpl implements TransactionService {
         assert atm != null :"cannot find any atm";
         assert bank != null : "cannot find any bank";
 
+
         BigDecimal changedAtmBalance = arrangeBalanceAtm(atm,amount);
         account.setBalance(userBalanceWithFee);
         atm.setCashBalance(changedAtmBalance);
@@ -76,7 +75,20 @@ public class TransactionServiceImpl implements TransactionService {
                 .card(validatedCard)
                 .bank(bank)
                 .build();
-            try {
+        if(finalTransaction != null) {
+            if (trxType.equals(TransactionType.DEPOSIT)) {
+                trxDeposit(finalTransaction);
+            }
+            if (trxType.equals(TransactionType.WITHDRAWAL)) {
+                trxWithdrawal(finalTransaction);
+            }
+            if (trxType.equals(TransactionType.TRANSFER)) {
+                trxTransfer(transactionRequest.getToTransferId(), finalTransaction);
+            }
+        } else {
+            throw new IllegalArgumentException("error caught while transaction || Rolling back . . .");
+        }
+        try {
                 Transaction validatedTransaction = validateTransaction(finalTransaction);
                 transactionRepository.saveAndFlush(validatedTransaction);
                 TransactionResponse response = TransactionResponse.builder()

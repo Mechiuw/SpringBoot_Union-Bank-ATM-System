@@ -24,4 +24,7 @@ public class TransactionRequest {
     private Bank bank;
     private Card card;
     private Account account;
+
+    //TRANSFER
+    private String toTransferId;
 }

@@ -2,9 +2,9 @@ package com.mcsoftware.atm.service;
 
 import com.mcsoftware.atm.model.dto.request.ATMRequest;
 import com.mcsoftware.atm.model.dto.response.ATMResponse;
+import com.mcsoftware.atm.model.dto.response.AccountResponse;
 import com.mcsoftware.atm.model.entity.ATM;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface ATMService {
@@ -14,6 +14,4 @@ public interface ATMService {
     ATMResponse update(String id, ATMRequest atmRequest);
     void delete(String id);
     ATMResponse checkCashBalance(String id);
-    ATMResponse withdraw(String id,BigDecimal withdrawal);
-    ATMResponse deposit(String id,BigDecimal deposit);
 }

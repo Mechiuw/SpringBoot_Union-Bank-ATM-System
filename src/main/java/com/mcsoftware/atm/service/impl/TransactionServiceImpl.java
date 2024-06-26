@@ -30,8 +30,6 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountRepository accountRepository;
     private final BankRepository bankRepository;
     private final EFeeCategory eFeeCategory;
-    private final ATMService atmService;
-    private final AccountService accountService;
 
     @Override
     public TransactionResponse create(TransactionRequest transactionRequest) {

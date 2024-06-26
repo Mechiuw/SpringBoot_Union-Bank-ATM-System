@@ -7,9 +7,6 @@ import com.mcsoftware.atm.model.entity.User;
 import com.mcsoftware.atm.repository.AccountRepository;
 import com.mcsoftware.atm.repository.UserRepository;
 import com.mcsoftware.atm.service.AccountService;
-import jakarta.transaction.RollbackException;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +19,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
@@ -233,114 +229,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountResponse depositBalance(String id, BigDecimal deposit) {
-        try{
-            Account account = accountRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("not found account with id " + id));
-
-            if(account.getBalance() != null){
-                account.setBalance(BigDecimal.ZERO);
-            }
-
-            if(account.getBalance() != null) {
-                account.setBalance(account.getBalance().add(deposit));
-            }
-            Account updatedBalance = accountRepository.saveAndFlush(account);
-
-            return AccountResponse.builder()
-                    .id(updatedBalance.getId())
-                    .accountNumber(updatedBalance.getAccountNumber())
-                    .balance(updatedBalance.getBalance())
-                    .build();
-        } catch (NoSuchElementException e){
-            System.err.println("Account not found: " + e.getMessage());
-            throw e;
-        } catch (Exception e){
-            System.err.println("Exceptions caught: " + e.getCause());
-            throw e;
-        }
-    }
-
-    @Override
-    public AccountResponse withdrawBalance(String id, BigDecimal withdraw) {
-        try{
-            Account account = accountRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("not found with id: " + id));
-
-            if(account.getBalance() != null){
-                account.setBalance(BigDecimal.ZERO);
-            }
-
-            if(account.getBalance() != null){
-                account.setBalance(account.getBalance().subtract(withdraw));
-            }
-
-            Account withdrawalAccount = accountRepository.saveAndFlush(account);
-
-            return AccountResponse.builder()
-                    .id(withdrawalAccount.getId())
-                    .accountNumber(withdrawalAccount.getAccountNumber())
-                    .balance(withdrawalAccount.getBalance())
-                    .build();
-        } catch (NoSuchElementException e){
-            System.err.println("Not found any account with id: " + id + " || with error: " + e.getMessage());
-            throw e;
-        } catch (Exception e){
-            System.err.println("Exception caught: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    @Override
-    public AccountResponse transferBalance(String accountId, String transferId, BigDecimal transfer) {
-        try {
-            Account sender = accountRepository.findById(accountId)
-                    .orElseThrow(() -> new NoSuchElementException("not found sender account with id " + accountId));
-            Account receiver = accountRepository.findById(transferId)
-                    .orElseThrow(() -> new NoSuchElementException("not found receiver account with id " + transferId));
-
-            BigDecimal adminFee = new BigDecimal("3000");
-            BigDecimal minimumTransfer = new BigDecimal("5000");
-
-            if (sender.getBalance() != null && receiver.getBalance() != null) {
-                if (transfer.compareTo(minimumTransfer) >= 0) {
-                    BigDecimal totalDebit = transfer.add(adminFee);
-
-                    if (sender.getBalance().compareTo(totalDebit) >= 0) {
-                        sender.setBalance(sender.getBalance().subtract(totalDebit));
-                        receiver.setBalance(receiver.getBalance().add(transfer));
-
-                        Account updatedSender = accountRepository.saveAndFlush(sender);
-                        Account updatedReceiver = accountRepository.saveAndFlush(receiver);
-
-                        recievedTransfer(updatedReceiver);
-
-                        return AccountResponse.builder()
-                                .id(updatedSender.getId())
-                                .accountNumber(updatedSender.getAccountNumber())
-                                .balance(updatedSender.getBalance())
-                                .userId(updatedSender.getUser().getId())
-                                .build();
-                    } else {
-                        throw new IllegalArgumentException("Sender has insufficient balance");
-                    }
-                } else {
-                    throw new IllegalArgumentException("Transfer amount must be greater than or equal to " + minimumTransfer);
-                }
-            } else {
-                throw new IllegalStateException("One of the accounts has a null balance");
-            }
-        } catch (NoSuchElementException e){
-            System.err.println("Not found account: " +e.getMessage());
-            throw e;
-        } catch (Exception e){
-            System.err.println("Exception caught: " +e.getMessage());
-            throw e;
-        }
-    }
-
-    @Override
-    public void recievedTransfer(Account receiver) {
+    public void receivedTransfer(Account receiver) {
         logTransferReceipt(receiver);
     }
 

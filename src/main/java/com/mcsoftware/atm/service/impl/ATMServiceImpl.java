@@ -2,12 +2,14 @@ package com.mcsoftware.atm.service.impl;
 
 import com.mcsoftware.atm.model.dto.request.ATMRequest;
 import com.mcsoftware.atm.model.dto.response.ATMResponse;
+import com.mcsoftware.atm.model.dto.response.AccountResponse;
 import com.mcsoftware.atm.model.entity.ATM;
+import com.mcsoftware.atm.model.entity.Account;
 import com.mcsoftware.atm.model.entity.Branch;
 import com.mcsoftware.atm.repository.ATMRepository;
+import com.mcsoftware.atm.repository.AccountRepository;
 import com.mcsoftware.atm.repository.BranchRepository;
 import com.mcsoftware.atm.service.ATMService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -147,49 +149,6 @@ public class ATMServiceImpl implements ATMService {
             return ATMResponse.builder()
                     .id(atm.getId())
                     .cashBalance(atm.getCashBalance())
-                    .build();
-        } catch (Exception e){
-            System.err.println(e.getMessage());
-            throw e;
-        }
-    }
-
-    @Override
-    public ATMResponse withdraw(String id, BigDecimal withdrawal) {
-        try {
-            ATM atm = atmRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("not found atm to withdraw"));
-            BigDecimal processed = atm.getCashBalance().subtract(withdrawal);
-            atm.setCashBalance(processed);
-            ATM subtractedAtmBalance = atmRepository.saveAndFlush(atm);
-            return ATMResponse.builder()
-                    .id(subtractedAtmBalance.getId())
-                    .branch(subtractedAtmBalance.getBranch().getId())
-                    .location(subtractedAtmBalance.getLocation())
-                    .cashBalance(subtractedAtmBalance.getCashBalance())
-                    .build();
-        } catch (Exception e){
-            System.err.println(e.getMessage());
-            throw e;
-        }
-    }
-
-    @Override
-    public ATMResponse deposit(String id,BigDecimal deposit) {
-        try {
-            ATM atm = atmRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException("not found atm to deposit"));
-            assert atm != null : "not found atm with such id";
-
-            BigDecimal processed = atm.getCashBalance().add(deposit);
-            atm.setCashBalance(processed);
-
-            ATM depositAtm = atmRepository.save(atm);
-            return ATMResponse.builder()
-                    .id(depositAtm.getId())
-                    .location(depositAtm.getLocation())
-                    .branch(depositAtm.getBranch().getId())
-                    .cashBalance(depositAtm.getCashBalance())
                     .build();
         } catch (Exception e){
             System.err.println(e.getMessage());

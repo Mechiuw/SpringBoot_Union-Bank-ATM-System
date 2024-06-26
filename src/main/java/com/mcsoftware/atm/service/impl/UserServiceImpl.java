@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getById(String id) {
-        return null;
+        User findUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("not found any user"));
+        if(findUser != null){
+            return UserResponse.builder()
+                    .id(findUser.getId())
+                    .name(findUser.getName())
+                    .email(findUser.getEmail())
+                    .phoneNumber(findUser.getPhoneNumber())
+                    .build();
+        } else {
+            return UserResponse.builder()
+                    .id("not found user id")
+                    .name("not found user name")
+                    .email("not found user email")
+                    .phoneNumber("not found user phone number")
+                    .build();
+        }
     }
 
     @Override

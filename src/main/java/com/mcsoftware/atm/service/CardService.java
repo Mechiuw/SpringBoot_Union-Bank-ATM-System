@@ -18,5 +18,5 @@ public interface CardService {
     //BUSINESS LOGIC SERVICE
     CardResponse blockCard(String cardId);
     List<Card> retrieveCard(String userId);
-    CardResponse updatePin(String cardId,CardRequest cardRequest);
+    CardResponse updatePin(String cardId,String newPin);
 }

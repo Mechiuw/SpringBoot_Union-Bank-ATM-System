@@ -106,9 +106,12 @@ public class CardServiceImpl implements CardService {
         try {
             Card card = cardRepository.findById(id)
                     .orElseThrow(() -> new NoSuchElementException("not found card"));
-            if (card.getId().equals(id)) {
+            Account account = accountRepository.findById(cardRequest.getAccount().getId())
+                    .orElseThrow(() -> new NoSuchElementException("not found te exact account"));
+            String accNumber = account.getAccountNumber();
+            if (card.getId().equals(id) && accNumber.equals(card.getCardNumber())) {
                 card.setCardNumber(cardRequest.getCardNumber());
-                card.setPin(cardRequest.getPin());
+                card.setPin(accNumber);
                 card.setUser(cardRequest.getUser());
                 card.setAccount(cardRequest.getAccount());
 
@@ -196,12 +199,16 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public CardResponse updatePin(String cardId,CardRequest cardRequest) {
+    public CardResponse updatePin(String cardId,String newPin) {
         try {
             Card card = cardRepository.findById(cardId)
                     .orElseThrow(() -> new NoSuchElementException("not found any card"));
-            if (card.getPin() != null) {
-                card.setPin(cardRequest.getPin());
+            Account account = accountRepository.findById(card.getAccount().getId())
+                    .orElseThrow(() -> new NoSuchElementException("not found any account"));
+            String accNumber = account.getAccountNumber();
+
+            if (card.getPin() != null && card.getPin().equals(accNumber)) {
+                card.setPin(newPin);
                 Card updatedPinCard = cardRepository.saveAndFlush(card);
                 return CardResponse.builder()
                         .id(updatedPinCard.getId())

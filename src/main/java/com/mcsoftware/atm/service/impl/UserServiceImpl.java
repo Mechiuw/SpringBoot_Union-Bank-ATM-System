@@ -67,7 +67,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse update(String id, UserRequest userRequest) {
-        return null;
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("not found any user"));
+        if(userRequest != null){
+            user.setName(userRequest.getName());
+            user.setEmail(userRequest.getEmail());
+            user.setPhoneNumber(userRequest.getPhoneNumber());
+            User updatedUser = userRepository.saveAndFlush(user);
+
+            return UserResponse.builder()
+                    .id(updatedUser.getId())
+                    .name(updatedUser.getName())
+                    .email(updatedUser.getEmail())
+                    .phoneNumber(updatedUser.getPhoneNumber())
+                    .build();
+        } else {
+            return UserResponse.builder()
+                    .id("not found user id")
+                    .name("not found user name")
+                    .email("not found user email")
+                    .phoneNumber("not found user phone number")
+                    .build();
+        }
     }
 
     @Override

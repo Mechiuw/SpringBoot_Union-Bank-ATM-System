@@ -66,4 +66,10 @@ public class AccountController {
                         .build()
         );
     }
+
+    @DeleteMapping(AppPath.DELETE_BY_ID)
+    public void delete(@PathVariable String id){
+        accountService.delete(id);
+        ResponseEntity.ok();
+    }
 }

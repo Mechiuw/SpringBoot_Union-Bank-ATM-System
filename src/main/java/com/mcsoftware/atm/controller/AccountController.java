@@ -72,4 +72,28 @@ public class AccountController {
         accountService.delete(id);
         ResponseEntity.ok();
     }
+
+    @PutMapping(AppPath.SOFT_DELETE_BY_ID)
+    public ResponseEntity<?> softDelete(@PathVariable String id){
+        AccountResponse accountResponse = accountService.softDeleteAccount(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+            CommonResponse.builder()
+                    .statusCode(HttpStatus.OK.value())
+                    .message("Successfully soft delete data")
+                    .data(accountResponse)
+                    .build()
+        );
+    }
+
+    @GetMapping(AppPath.CHECK_CURRENT_BALANCE)
+    public ResponseEntity<?> checkCurrentBalance(@PathVariable String id){
+        AccountResponse accountResponse = accountService.checkCurrentBalance(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("Successfully fetch current balance data")
+                        .data(accountResponse)
+                        .build()
+        );
+    }
 }

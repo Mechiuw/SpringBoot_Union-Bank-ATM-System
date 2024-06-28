@@ -59,6 +59,17 @@ public class ATMController {
                         .data(atmResponse)
                         .build());
     }
-    public void delete(ATMRequest atmRequest){}
-    public ResponseEntity<?> checkCashBalance(ATMRequest atmRequest){}
+    public void delete(String id){
+        atmService.delete(id);
+        ResponseEntity.ok();
+    }
+    public ResponseEntity<?> checkCashBalance(String id){
+        ATMResponse atmResponse = atmService.checkCashBalance(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("successfully created atm")
+                        .data(atmResponse)
+                        .build());
+    }
 }

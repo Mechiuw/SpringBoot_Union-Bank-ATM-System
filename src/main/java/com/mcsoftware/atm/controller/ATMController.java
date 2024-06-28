@@ -1,5 +1,6 @@
 package com.mcsoftware.atm.controller;
 
+import com.mcsoftware.atm.constant.ATMServicePath;
 import com.mcsoftware.atm.constant.AppPath;
 import com.mcsoftware.atm.model.dto.request.ATMRequest;
 import com.mcsoftware.atm.model.dto.response.ATMResponse;
@@ -9,6 +10,7 @@ import com.mcsoftware.atm.service.ATMService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -63,6 +65,8 @@ public class ATMController {
         atmService.delete(id);
         ResponseEntity.ok();
     }
+
+    @GetMapping(ATMServicePath.CHECK_CASH_BALANCE)
     public ResponseEntity<?> checkCashBalance(String id){
         ATMResponse atmResponse = atmService.checkCashBalance(id);
         return ResponseEntity.status(HttpStatus.OK).body(

@@ -54,14 +54,39 @@ public class TransactionController {
         );
     }
     @PutMapping(AppPath.PUT_BY_ID)
-    public ResponseEntity<?> update(@PathVariable String id, @RequestBody TransactionRequest transactionRequest){}
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody TransactionRequest transactionRequest){
+        TransactionResponse transactionResponse = transactionService.update(id,transactionRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("successfully update data")
+                        .data(transactionResponse)
+                        .build()
+        );
 
-    @DeleteMapping(AppPath.DELETE_BY_ID)
-    public void delete(@PathVariable String id){}
+    }
 
     @PutMapping(AppPath.SOFT_DELETE_BY_ID)
-    public ResponseEntity<?> softDelete(@PathVariable String id){}
+    public ResponseEntity<?> softDelete(@PathVariable String id){
+        TransactionResponse transactionResponse = transactionService.softDelete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("successfully soft delete data")
+                        .data(transactionResponse)
+                        .build()
+        );
+    }
 
     @GetMapping("/all-trx/history")
-    public ResponseEntity<?> getAllTransactionHistory(){}
+    public ResponseEntity<?> getAllTransactionHistory(){
+        List<TransactionResponse> list = transactionService.getAllTransactionHistory();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("successfully fetch data")
+                        .data(list)
+                        .build()
+        );
+    }
 }

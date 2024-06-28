@@ -170,4 +170,25 @@ public class BankController {
         }
     }
 
+    @PutMapping
+    public ResponseEntity<?> requestToWithdraw(@PathVariable String id,@RequestParam BigDecimal amount){
+        try {
+            AccountResponse accountResponse = bankService.requestToWithdraw(id, amount);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    CommonResponse.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .message("Successfully updated bank")
+                            .data(accountResponse)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    CommonResponse.builder()
+                            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                            .message("Failed to update bank: " + e.getMessage())
+                            .build()
+            );
+        }
+    }
+
 }

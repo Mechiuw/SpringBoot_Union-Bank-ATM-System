@@ -37,7 +37,7 @@ public class BankController {
     }
 
     @GetMapping(AppPath.GET_BY_ID)
-    public ResponseEntity<?> getById(String id){
+    public ResponseEntity<?> getById(@PathVariable String id){
         BankResponse bankResponse = bankService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
@@ -61,7 +61,7 @@ public class BankController {
     }
 
     @PutMapping(AppPath.PUT_BY_ID)
-    public ResponseEntity<?> update(String id,BankRequest bankRequest){
+    public ResponseEntity<?> update(@PathVariable String id,@RequestBody BankRequest bankRequest){
         BankResponse bankResponse = bankService.update(id,bankRequest);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
@@ -73,7 +73,7 @@ public class BankController {
     }
 
     @DeleteMapping(AppPath.DELETE_BY_ID)
-    public void delete(String id){
+    public void delete(@PathVariable String id){
         bankService.delete(id);
         ResponseEntity.ok();
     }
@@ -91,7 +91,7 @@ public class BankController {
     }
 
     @GetMapping(BankServicePath.LIST_ALL_BRANCH_ATM)
-    public ResponseEntity<?> listAllBranchAtms(String bankId,String branchId){
+    public ResponseEntity<?> listAllBranchAtms(@PathVariable String bankId, @RequestParam String branchId){
         List<ATM> atms = bankService.listAllBranchAtms(bankId,branchId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()

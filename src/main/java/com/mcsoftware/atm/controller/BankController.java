@@ -7,6 +7,7 @@ import com.mcsoftware.atm.model.dto.response.ATMResponse;
 import com.mcsoftware.atm.model.dto.response.BankResponse;
 import com.mcsoftware.atm.model.dto.response.CommonResponse;
 import com.mcsoftware.atm.model.entity.Bank;
+import com.mcsoftware.atm.model.entity.Branch;
 import com.mcsoftware.atm.service.BankService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class BankController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 CommonResponse.builder()
                         .statusCode(HttpStatus.CREATED.value())
-                        .message("successfully created atm")
+                        .message("successfully created bank")
                         .data(bankResponse)
                         .build()
         );
@@ -38,7 +39,7 @@ public class BankController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
                         .statusCode(HttpStatus.OK.value())
-                        .message("successfully created atm")
+                        .message("successfully fetch data")
                         .data(bankResponse)
                         .build()
         );
@@ -48,7 +49,7 @@ public class BankController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
                         .statusCode(HttpStatus.OK.value())
-                        .message("successfully created atm")
+                        .message("successfully fetch all bank")
                         .data(banks)
                         .build()
         );
@@ -59,8 +60,24 @@ public class BankController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
                         .statusCode(HttpStatus.OK.value())
-                        .message("successfully created atm")
+                        .message("successfully update bank")
                         .data(bankResponse)
+                        .build()
+        );
+    }
+
+    public void delete(String id){
+        bankService.delete(id);
+        ResponseEntity.ok();
+    }
+
+    public ResponseEntity<?> listAllBranch(String id){
+        List<Branch> branches = bankService.listAllBranch(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("successfully created atm")
+                        .data(branches)
                         .build()
         );
     }

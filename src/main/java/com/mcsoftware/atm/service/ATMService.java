@@ -2,7 +2,6 @@ package com.mcsoftware.atm.service;
 
 import com.mcsoftware.atm.model.dto.request.ATMRequest;
 import com.mcsoftware.atm.model.dto.response.ATMResponse;
-import com.mcsoftware.atm.model.dto.response.AccountResponse;
 import com.mcsoftware.atm.model.entity.ATM;
 
 import java.util.List;

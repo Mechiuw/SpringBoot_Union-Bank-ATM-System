@@ -7,7 +7,6 @@ import com.mcsoftware.atm.model.dto.response.CommonResponse;
 import com.mcsoftware.atm.model.entity.Account;
 import com.mcsoftware.atm.service.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

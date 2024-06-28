@@ -3,10 +3,16 @@ package com.mcsoftware.atm.controller;
 import com.mcsoftware.atm.constant.AppPath;
 import com.mcsoftware.atm.constant.CardServicePath;
 import com.mcsoftware.atm.model.dto.request.CardRequest;
+import com.mcsoftware.atm.model.dto.response.CardResponse;
+import com.mcsoftware.atm.model.dto.response.CommonResponse;
+import com.mcsoftware.atm.model.entity.Card;
 import com.mcsoftware.atm.service.CardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,19 +21,58 @@ public class CardController {
     private final CardService cardService;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CardRequest cardRequest){}
+    public ResponseEntity<?> create(@RequestBody CardRequest cardRequest){
+        CardResponse cardResponse = cardService.create(cardRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .message("successfully created card")
+                        .data(cardResponse)
+                        .build()
+        );
+    }
 
     @GetMapping(AppPath.GET_BY_ID)
-    public ResponseEntity<?> getById(@PathVariable String id){}
+    public ResponseEntity<?> getById(@PathVariable String id){
+        CardResponse cardResponse = cardService.getById(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .message("successfully fetch card")
+                        .data(cardResponse)
+                        .build()
+        );
+    }
 
     @GetMapping(AppPath.GET_ALL)
-    public ResponseEntity<?> getAll(){}
+    public ResponseEntity<?> getAll(){
+        List<Card> cardList = cardService.getAll();
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .message("successfully fetch all cards")
+                        .data(cardList)
+                        .build()
+        );
+    }
 
     @PutMapping(AppPath.PUT_BY_ID)
-    public ResponseEntity<?> update(@PathVariable String id,@RequestBody CardRequest cardRequest){}
+    public ResponseEntity<?> update(@PathVariable String id,@RequestBody CardRequest cardRequest){
+        CardResponse cardResponse = cardService.update(id,cardRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .message("successfully updated card")
+                        .data(cardResponse)
+                        .build()
+        );
+    }
 
     @DeleteMapping(AppPath.DELETE_BY_ID)
-    public ResponseEntity<?> delete(@PathVariable String id){}
+    public void delete(@PathVariable String id){
+        cardService.delete(id);
+        ResponseEntity.ok();
+    }
 
     @PutMapping(CardServicePath.BLOCK_CARD)
     public ResponseEntity<?> blockCard(@PathVariable String cardId){}

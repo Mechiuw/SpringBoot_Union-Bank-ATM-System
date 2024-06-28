@@ -23,7 +23,7 @@ public class BranchController {
     private final BranchService branchService;
 
     @PostMapping
-    public ResponseEntity<?> create(BranchRequest branchRequest){
+    public ResponseEntity<?> create(@RequestBody BranchRequest branchRequest){
         BranchResponse branchResponse = branchService.create(branchRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 CommonResponse.builder()
@@ -35,7 +35,7 @@ public class BranchController {
     }
 
     @GetMapping(AppPath.GET_BY_ID)
-    public ResponseEntity<?> getById(String id){
+    public ResponseEntity<?> getById(@PathVariable String id){
         BranchResponse branchResponse = branchService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
@@ -59,7 +59,7 @@ public class BranchController {
     }
 
     @PutMapping(AppPath.PUT_BY_ID)
-    public ResponseEntity<?> update(String id,BranchRequest branchRequest){
+    public ResponseEntity<?> update(@PathVariable String id,@RequestBody BranchRequest branchRequest){
         BranchResponse branchResponse = branchService.update(id,branchRequest);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
@@ -71,13 +71,13 @@ public class BranchController {
     }
 
     @DeleteMapping(AppPath.DELETE_BY_ID)
-    public void delete(String id){
+    public void delete(@PathVariable String id){
         branchService.delete(id);
         ResponseEntity.ok();
     }
 
     @GetMapping(BranchServicePath.GET_ALL_ATM)
-    public ResponseEntity<?> getAllAtm(String id){
+    public ResponseEntity<?> getAllAtm(@PathVariable String id){
         List<ATM> atms = branchService.getAllAtm(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
@@ -89,7 +89,7 @@ public class BranchController {
     }
 
     @GetMapping(BranchServicePath.GET_BANK_REF)
-    public ResponseEntity<?> bankReference(String branchId){
+    public ResponseEntity<?> bankReference(@PathVariable String branchId){
         BranchResponse branchResponse = branchService.bankReference(branchId);
         return ResponseEntity.status(HttpStatus.OK).body(
             CommonResponse.builder()
@@ -101,7 +101,7 @@ public class BranchController {
     }
 
     @GetMapping(BranchServicePath.GROUPED_BRANCH)
-    public ResponseEntity<?> groupedBranchLocations(String id){
+    public ResponseEntity<?> groupedBranchLocations(@PathVariable String id){
         List<BranchGroupingResponse> branchGroupingResponses = branchService.groupedBranchLocations();
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()

@@ -55,10 +55,22 @@ public class UserController {
     }
 
     @PutMapping(AppPath.PUT_BY_ID)
-    public ResponseEntity<?> update(@PathVariable String id,@RequestBody UserRequest userRequest){}
+    public ResponseEntity<?> update(@PathVariable String id,@RequestBody UserRequest userRequest){
+        UserResponse userResponse = userService.update(id,userRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("successfully update data")
+                        .data(userResponse)
+                        .build()
+        );
+    }
 
     @DeleteMapping(AppPath.DELETE_BY_ID)
-    public void delete(@PathVariable String id){}
+    public void delete(@PathVariable String id){
+        userService.delete(id);
+        ResponseEntity.ok();
+    }
 
     @PutMapping(AppPath.SOFT_DELETE_BY_ID)
     public ResponseEntity<?> softDelete(@PathVariable String id){}

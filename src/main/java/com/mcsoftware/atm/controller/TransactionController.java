@@ -2,7 +2,6 @@ package com.mcsoftware.atm.controller;
 
 import com.mcsoftware.atm.constant.AppPath;
 import com.mcsoftware.atm.model.dto.request.TransactionRequest;
-import com.mcsoftware.atm.model.dto.response.CardResponse;
 import com.mcsoftware.atm.model.dto.response.CommonResponse;
 import com.mcsoftware.atm.model.dto.response.TransactionResponse;
 import com.mcsoftware.atm.model.entity.Transaction;

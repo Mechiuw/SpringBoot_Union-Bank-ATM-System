@@ -10,9 +10,7 @@ import com.mcsoftware.atm.service.ATMService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,6 +20,7 @@ import java.util.List;
 public class ATMController {
     private final ATMService atmService;
 
+    @PostMapping
     public ResponseEntity<?> create(ATMRequest atmRequest){
         ATMResponse atmResponse = atmService.create(atmRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -32,7 +31,8 @@ public class ATMController {
                         .build()
         );
     }
-    public ResponseEntity<?> getById(String id){
+    @GetMapping(AppPath.GET_BY_ID)
+    public ResponseEntity<?> getById(@PathVariable String id){
         ATMResponse atmResponse = atmService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
@@ -42,6 +42,7 @@ public class ATMController {
                         .build()
         );
     }
+    @GetMapping(AppPath.GET_ALL)
     public ResponseEntity<?> getAll(){
         List<ATM> atms = atmService.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -52,7 +53,8 @@ public class ATMController {
                         .build()
         );
     }
-    public ResponseEntity<?> update(String id,ATMRequest atmRequest){
+    @GetMapping(AppPath.PUT_BY_ID)
+    public ResponseEntity<?> update(@PathVariable String id,@RequestBody ATMRequest atmRequest){
         ATMResponse atmResponse = atmService.update(id,atmRequest);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
@@ -61,13 +63,14 @@ public class ATMController {
                         .data(atmResponse)
                         .build());
     }
+    @DeleteMapping(AppPath.DELETE_BY_ID)
     public void delete(String id){
         atmService.delete(id);
         ResponseEntity.ok();
     }
 
     @GetMapping(ATMServicePath.CHECK_CASH_BALANCE)
-    public ResponseEntity<?> checkCashBalance(String id){
+    public ResponseEntity<?> checkCashBalance(@PathVariable String id){
         ATMResponse atmResponse = atmService.checkCashBalance(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()

@@ -21,7 +21,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping
-    public ResponseEntity<?> create(AccountRequest accountRequest){
+    public ResponseEntity<?> create(@RequestBody AccountRequest accountRequest){
         AccountResponse accountResponse = accountService.create(accountRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 CommonResponse.builder()

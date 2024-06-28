@@ -73,8 +73,26 @@ public class UserController {
     }
 
     @PutMapping(AppPath.SOFT_DELETE_BY_ID)
-    public ResponseEntity<?> softDelete(@PathVariable String id){}
+    public ResponseEntity<?> softDelete(@PathVariable String id){
+        UserResponse userResponse = userService.softDelete(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("successfully soft delete data")
+                        .data(userResponse)
+                        .build()
+        );
+    }
 
     @PutMapping("/block/{id}")
-    public ResponseEntity<?> blockUser(@PathVariable String id){}
+    public ResponseEntity<?> blockUser(@PathVariable String id){
+        UserResponse userResponse = userService.blockUser(id);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("successfully blocked user")
+                        .data(userResponse)
+                        .build()
+        );
+    }
 }

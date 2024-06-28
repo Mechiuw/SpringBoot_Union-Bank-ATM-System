@@ -75,11 +75,38 @@ public class CardController {
     }
 
     @PutMapping(CardServicePath.BLOCK_CARD)
-    public ResponseEntity<?> blockCard(@PathVariable String cardId){}
+    public ResponseEntity<?> blockCard(@PathVariable String cardId){
+        CardResponse cardResponse = cardService.blockCard(cardId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .message("successfully blocked card")
+                        .data(cardResponse)
+                        .build()
+        );
+    }
     @GetMapping(CardServicePath.RETRIEVE_CARD)
-    public ResponseEntity<?> retrieveCard(@PathVariable String userId){}
+    public ResponseEntity<?> retrieveCard(@PathVariable String userId){
+        List<Card> cards = cardService.retrieveCard(userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .message("successfully retrieve all card for specific user")
+                        .data(cards)
+                        .build()
+        );
+    }
 
     @PutMapping(CardServicePath.UPDATE_PIN)
-    public ResponseEntity<?> updatePin(@PathVariable String cardId, @RequestParam String newPin){}
+    public ResponseEntity<?> updatePin(@PathVariable String cardId, @RequestParam String newPin){
+        CardResponse cardResponse = cardService.updatePin(cardId,newPin);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .message("successfully updated card pin")
+                        .data(cardResponse)
+                        .build()
+        );
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.mcsoftware.atm.controller;
 
+import com.mcsoftware.atm.constant.AccountServicePath;
 import com.mcsoftware.atm.constant.AppPath;
 import com.mcsoftware.atm.model.dto.request.AccountRequest;
 import com.mcsoftware.atm.model.dto.response.AccountResponse;
@@ -84,7 +85,7 @@ public class AccountController {
         );
     }
 
-    @GetMapping(AppPath.CHECK_CURRENT_BALANCE)
+    @GetMapping(AccountServicePath.CHECK_CURRENT_BALANCE)
     public ResponseEntity<?> checkCurrentBalance(@PathVariable String id){
         AccountResponse accountResponse = accountService.checkCurrentBalance(id);
         return ResponseEntity.status(HttpStatus.OK).body(

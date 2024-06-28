@@ -39,6 +39,6 @@ public interface BankService {
     BigDecimal feeRegulateBank(BigDecimal amount);
 
     //USER SERVICE (BIG AMOUNT)
-    AccountResponse requestToDeposit(Account account, BigDecimal amount);
-    AccountResponse requestToWithdraw(Account account,BigDecimal amount);
+    AccountResponse requestToDeposit(String id, BigDecimal amount);
+    AccountResponse requestToWithdraw(String id,BigDecimal amount);
 }

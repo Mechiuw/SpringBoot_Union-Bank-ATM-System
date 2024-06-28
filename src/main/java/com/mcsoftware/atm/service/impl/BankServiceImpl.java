@@ -378,8 +378,8 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public AccountResponse requestToDeposit(Account account, BigDecimal amount) {
-        Account findAccount = accountRepository.findById(account.getId())
+    public AccountResponse requestToDeposit(String accountId, BigDecimal amount) {
+        Account findAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new NoSuchElementException("not found any account"));
         BigDecimal amountWithFee = feeRegulateBank(amount);
         findAccount.setBalance(amountWithFee);
@@ -393,8 +393,8 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public AccountResponse requestToWithdraw(Account account, BigDecimal amount) {
-        Account findAccount = accountRepository.findById(account.getId())
+    public AccountResponse requestToWithdraw(String accountId, BigDecimal amount) {
+        Account findAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new NoSuchElementException("not found any account"));
         BigDecimal amountWithFee = feeRegulateBank(amount);
         findAccount.setBalance(amountWithFee);

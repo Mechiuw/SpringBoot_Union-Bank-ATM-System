@@ -4,19 +4,18 @@ import com.mcsoftware.atm.constant.AppPath;
 import com.mcsoftware.atm.model.dto.request.ATMRequest;
 import com.mcsoftware.atm.model.dto.request.BankRequest;
 import com.mcsoftware.atm.model.dto.response.ATMResponse;
+import com.mcsoftware.atm.model.dto.response.AccountResponse;
 import com.mcsoftware.atm.model.dto.response.BankResponse;
 import com.mcsoftware.atm.model.dto.response.CommonResponse;
 import com.mcsoftware.atm.model.entity.ATM;
+import com.mcsoftware.atm.model.entity.Account;
 import com.mcsoftware.atm.model.entity.Bank;
 import com.mcsoftware.atm.model.entity.Branch;
 import com.mcsoftware.atm.service.BankService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -123,5 +122,43 @@ public class BankController {
         }
     }
 
+
+    @PutMapping
+    public ResponseEntity<?> withdrawalFromAtm(
+            @RequestParam String bankId,
+            @RequestParam String branchId,
+            @RequestParam String atmId,
+            @RequestParam BigDecimal depositFromRepo)
+    {
+        try {
+            BankResponse bankResponse = bankService.withdrawalFromAtm(bankId, branchId, atmId, depositFromRepo);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    CommonResponse.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .message("Successfully updated bank")
+                            .data(bankResponse)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    CommonResponse.builder()
+                            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                            .message("Failed to update bank: " + e.getMessage())
+                            .build()
+            );
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> requestToDeposit(Account account, BigDecimal amount){
+        AccountResponse accountResponse = bankService.requestToDeposit(account,amount);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                CommonResponse.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .message("successfully update bank")
+                        .data(accountResponse)
+                        .build()
+        );
+    }
 
 }

@@ -149,16 +149,25 @@ public class BankController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> requestToDeposit(Account account, BigDecimal amount){
-        AccountResponse accountResponse = bankService.requestToDeposit(account,amount);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                CommonResponse.builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .message("successfully update bank")
-                        .data(accountResponse)
-                        .build()
-        );
+    @PutMapping
+    public ResponseEntity<?> requestToDeposit(@PathVariable String id,@RequestParam BigDecimal amount){
+        try {
+            AccountResponse accountResponse = bankService.requestToDeposit(id, amount);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    CommonResponse.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .message("Successfully updated bank")
+                            .data(accountResponse)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    CommonResponse.builder()
+                            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                            .message("Failed to update bank: " + e.getMessage())
+                            .build()
+            );
+        }
     }
 
 }

@@ -1,14 +1,12 @@
 package com.mcsoftware.atm.controller;
 
+import com.mcsoftware.atm.constant.BankServicePath;
 import com.mcsoftware.atm.constant.AppPath;
-import com.mcsoftware.atm.model.dto.request.ATMRequest;
 import com.mcsoftware.atm.model.dto.request.BankRequest;
-import com.mcsoftware.atm.model.dto.response.ATMResponse;
 import com.mcsoftware.atm.model.dto.response.AccountResponse;
 import com.mcsoftware.atm.model.dto.response.BankResponse;
 import com.mcsoftware.atm.model.dto.response.CommonResponse;
 import com.mcsoftware.atm.model.entity.ATM;
-import com.mcsoftware.atm.model.entity.Account;
 import com.mcsoftware.atm.model.entity.Bank;
 import com.mcsoftware.atm.model.entity.Branch;
 import com.mcsoftware.atm.service.BankService;
@@ -26,7 +24,8 @@ import java.util.List;
 public class BankController {
     private final BankService bankService;
 
-    public ResponseEntity<?> create(BankRequest bankRequest){
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody BankRequest bankRequest){
         BankResponse bankResponse = bankService.create(bankRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 CommonResponse.builder()
@@ -37,6 +36,7 @@ public class BankController {
         );
     }
 
+    @GetMapping(AppPath.GET_BY_ID)
     public ResponseEntity<?> getById(String id){
         BankResponse bankResponse = bankService.getById(id);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -47,6 +47,8 @@ public class BankController {
                         .build()
         );
     }
+
+    @GetMapping(AppPath.GET_ALL)
     public ResponseEntity<?> getAll(){
         List<Bank> banks = bankService.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -58,6 +60,7 @@ public class BankController {
         );
     }
 
+    @PutMapping(AppPath.PUT_BY_ID)
     public ResponseEntity<?> update(String id,BankRequest bankRequest){
         BankResponse bankResponse = bankService.update(id,bankRequest);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -69,34 +72,37 @@ public class BankController {
         );
     }
 
+    @DeleteMapping(AppPath.DELETE_BY_ID)
     public void delete(String id){
         bankService.delete(id);
         ResponseEntity.ok();
     }
 
-    public ResponseEntity<?> listAllBranch(String id){
+    @GetMapping(BankServicePath.LIST_ALL_BRANCH)
+    public ResponseEntity<?> listAllBranch(@PathVariable String id){
         List<Branch> branches = bankService.listAllBranch(id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
                         .statusCode(HttpStatus.OK.value())
-                        .message("successfully created atm")
+                        .message("successfully fetch all branches")
                         .data(branches)
                         .build()
         );
     }
 
-    public ResponseEntity<?> listAllBranch(String bankId,String branchId){
+    @GetMapping(BankServicePath.LIST_ALL_BRANCH_ATM)
+    public ResponseEntity<?> listAllBranchAtms(String bankId,String branchId){
         List<ATM> atms = bankService.listAllBranchAtms(bankId,branchId);
         return ResponseEntity.status(HttpStatus.OK).body(
                 CommonResponse.builder()
                         .statusCode(HttpStatus.OK.value())
-                        .message("successfully created atm")
+                        .message("successfully fetch all atms")
                         .data(atms)
                         .build()
         );
     }
 
-    @PutMapping
+    @PutMapping(BankServicePath.DEPOSIT_ATM)
     public ResponseEntity<?> depositToAtm(
             @RequestParam String bankId,
             @RequestParam String branchId,
@@ -108,7 +114,7 @@ public class BankController {
             return ResponseEntity.status(HttpStatus.OK).body(
                     CommonResponse.builder()
                             .statusCode(HttpStatus.OK.value())
-                            .message("Successfully updated bank")
+                            .message("Successfully deposit to atm")
                             .data(bankResponse)
                             .build()
             );
@@ -123,7 +129,7 @@ public class BankController {
     }
 
 
-    @PutMapping
+    @PutMapping(BankServicePath.WITHDRAWAL_ATM)
     public ResponseEntity<?> withdrawalFromAtm(
             @RequestParam String bankId,
             @RequestParam String branchId,
@@ -135,7 +141,7 @@ public class BankController {
             return ResponseEntity.status(HttpStatus.OK).body(
                     CommonResponse.builder()
                             .statusCode(HttpStatus.OK.value())
-                            .message("Successfully updated bank")
+                            .message("Successfully withdrawal from atm")
                             .data(bankResponse)
                             .build()
             );
@@ -149,14 +155,14 @@ public class BankController {
         }
     }
 
-    @PutMapping
+    @PutMapping(BankServicePath.REQ_DEPOSIT)
     public ResponseEntity<?> requestToDeposit(@PathVariable String id,@RequestParam BigDecimal amount){
         try {
             AccountResponse accountResponse = bankService.requestToDeposit(id, amount);
             return ResponseEntity.status(HttpStatus.OK).body(
                     CommonResponse.builder()
                             .statusCode(HttpStatus.OK.value())
-                            .message("Successfully updated bank")
+                            .message("Successfully request deposit")
                             .data(accountResponse)
                             .build()
             );
@@ -164,20 +170,20 @@ public class BankController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     CommonResponse.builder()
                             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                            .message("Failed to update bank: " + e.getMessage())
+                            .message("Failed to request deposit: " + e.getMessage())
                             .build()
             );
         }
     }
 
-    @PutMapping
+    @PutMapping(BankServicePath.REQ_WITHDRAWAL)
     public ResponseEntity<?> requestToWithdraw(@PathVariable String id,@RequestParam BigDecimal amount){
         try {
             AccountResponse accountResponse = bankService.requestToWithdraw(id, amount);
             return ResponseEntity.status(HttpStatus.OK).body(
                     CommonResponse.builder()
                             .statusCode(HttpStatus.OK.value())
-                            .message("Successfully updated bank")
+                            .message("Successfully request withdrawal")
                             .data(accountResponse)
                             .build()
             );
@@ -185,7 +191,7 @@ public class BankController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     CommonResponse.builder()
                             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                            .message("Failed to update bank: " + e.getMessage())
+                            .message("Failed to request withdrawal: " + e.getMessage())
                             .build()
             );
         }

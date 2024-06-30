@@ -1,15 +1,19 @@
 package com.mcsoftware.atm.constant;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 
+@Configuration
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public class EFeeCategory {
+
+    @Bean
+    public EFeeCategory eFeeCategoryBean(){
+        return new EFeeCategory();
+    }
     public final BigDecimal MICRO_FEE = new BigDecimal("1500");
     public final BigDecimal STANDARD_FEE = new BigDecimal("2000");
     public BigDecimal EXCESSIVE_FEE = new BigDecimal("2200");

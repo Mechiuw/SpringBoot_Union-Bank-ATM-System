@@ -14,6 +14,7 @@ import com.mcsoftware.atm.repository.BankRepository;
 import com.mcsoftware.atm.repository.BranchRepository;
 import com.mcsoftware.atm.service.BankService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -371,39 +372,54 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public BigDecimal feeRegulateBank(BigDecimal amount) {
-        if(amount.compareTo(eFeeCategory.getSTANDARD_RANGE()) <= 0){
-            return amount.subtract(eFeeCategory.STANDARD_FEE);
+        if (amount.compareTo(eFeeCategory.getSTANDARD_RANGE()) <= 0) {
+            return eFeeCategory.getSTANDARD_FEE();
         }
-        return amount.subtract(eFeeCategory.EXCESSIVE_FEE);
+        return eFeeCategory.getEXCESSIVE_FEE();
     }
+
 
     @Override
     public AccountResponse requestToDeposit(String accountId, BigDecimal amount) {
         Account findAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new NoSuchElementException("not found any account"));
-        BigDecimal amountWithFee = feeRegulateBank(amount);
-        findAccount.setBalance(amountWithFee);
-        Account saveAccount = accountRepository.saveAndFlush(findAccount);
+                .orElseThrow(() -> new NoSuchElementException("Account not found"));
+
+        BigDecimal fee = feeRegulateBank(amount);
+        BigDecimal amountWithFee = amount.subtract(fee);
+
+        findAccount.setBalance(findAccount.getBalance().add(amountWithFee));
+        Account savedAccount = accountRepository.saveAndFlush(findAccount);
+
         return AccountResponse.builder()
-                .id(saveAccount.getId())
-                .accountNumber(saveAccount.getAccountNumber())
-                .userId(saveAccount.getUser().getId())
-                .balance(saveAccount.getBalance())
+                .id(savedAccount.getId())
+                .accountNumber(savedAccount.getAccountNumber())
+                .userId(savedAccount.getUser().getId())
+                .balance(savedAccount.getBalance())
                 .build();
     }
+
 
     @Override
     public AccountResponse requestToWithdraw(String accountId, BigDecimal amount) {
         Account findAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new NoSuchElementException("not found any account"));
-        BigDecimal amountWithFee = feeRegulateBank(amount);
-        findAccount.setBalance(amountWithFee);
-        Account saveAccount = accountRepository.saveAndFlush(findAccount);
+                .orElseThrow(() -> new NoSuchElementException("Account not found"));
+
+        BigDecimal fee = feeRegulateBank(amount);
+        BigDecimal amountWithFee = amount.add(fee);
+
+        if (findAccount.getBalance().compareTo(amountWithFee) < 0) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+
+        findAccount.setBalance(findAccount.getBalance().subtract(amountWithFee));
+        Account savedAccount = accountRepository.saveAndFlush(findAccount);
+
         return AccountResponse.builder()
-                .id(saveAccount.getId())
-                .accountNumber(saveAccount.getAccountNumber())
-                .userId(saveAccount.getUser().getId())
-                .balance(saveAccount.getBalance())
+                .id(savedAccount.getId())
+                .accountNumber(savedAccount.getAccountNumber())
+                .userId(savedAccount.getUser().getId())
+                .balance(savedAccount.getBalance())
                 .build();
     }
+
 }

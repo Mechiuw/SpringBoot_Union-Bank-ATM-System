@@ -3,8 +3,10 @@ package com.mcsoftware.atm.service.impl;
 import com.mcsoftware.atm.model.dto.request.AccountRequest;
 import com.mcsoftware.atm.model.dto.response.AccountResponse;
 import com.mcsoftware.atm.model.entity.Account;
+import com.mcsoftware.atm.model.entity.Bank;
 import com.mcsoftware.atm.model.entity.User;
 import com.mcsoftware.atm.repository.AccountRepository;
+import com.mcsoftware.atm.repository.BankRepository;
 import com.mcsoftware.atm.repository.UserRepository;
 import com.mcsoftware.atm.service.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ import java.util.Optional;
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
-
+    private final BankRepository bankRepository;
 
     public void minimumDeposit(BigDecimal currentBalance) {
         if(currentBalance.compareTo(new BigDecimal("500000")) < 0){
@@ -60,6 +62,8 @@ public class AccountServiceImpl implements AccountService {
         String userId = accountRequest.getUser().getId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException(String.format("not found user with id : %s",userId)));
+        Bank bank = bankRepository.findById(accountRequest.getBank().getId())
+                .orElseThrow(() -> new NoSuchElementException("not found bank"));
 
         assert user != null : "user must not be null or not found";
 
@@ -67,6 +71,7 @@ public class AccountServiceImpl implements AccountService {
                 .accountNumber(accountRequest.getAccountNumber())
                 .balance(accountRequest.getBalance())
                 .user(user)
+                .bank(bank)
                 .build();
         Account savedAccount = accountRepository.save(account);
 
@@ -75,6 +80,7 @@ public class AccountServiceImpl implements AccountService {
                 .accountNumber(savedAccount.getAccountNumber())
                 .balance(savedAccount.getBalance())
                 .userId(savedAccount.getUser().getId())
+                .bank(savedAccount.getBank().getId())
                 .build();
     }
 
@@ -108,6 +114,7 @@ public class AccountServiceImpl implements AccountService {
                     .accountNumber(account.getAccountNumber())
                     .userId(user.getId())
                     .balance(account.getBalance())
+                    .bank(account.getBank().getId())
                     .build();
         } catch (NoSuchElementException e) {
             System.err.printf("Not found specific user associated with the account : %s%n",e.getMessage());
@@ -116,6 +123,7 @@ public class AccountServiceImpl implements AccountService {
                     .accountNumber("account number not found")
                     .userId("user not found")
                     .balance(BigDecimal.ZERO)
+                    .bank("bank not found")
                     .build();
         }
         catch (Exception e){
@@ -140,6 +148,7 @@ public class AccountServiceImpl implements AccountService {
                     .accountNumber(updatedAccount.getAccountNumber())
                     .userId(updatedAccount.getUser().getId())
                     .balance(updatedAccount.getBalance())
+                    .bank(updatedAccount.getBank().getId())
                     .build();
         } catch (NoSuchElementException e){
             System.err.printf("No Such Element of %s%n",e.getMessage());
@@ -148,6 +157,7 @@ public class AccountServiceImpl implements AccountService {
                     .accountNumber("not found")
                     .userId("not found")
                     .balance(BigDecimal.ZERO)
+                    .bank("not found bank")
                     .build();
         } catch (IllegalArgumentException e){
             System.err.printf("Validations error associated with the account : %s%n",e.getMessage());
@@ -199,6 +209,7 @@ public class AccountServiceImpl implements AccountService {
                     .accountNumber(saveChanges.getAccountNumber())
                     .userId(saveChanges.getUser() != null ? saveChanges.getUser().getId() : null)
                     .balance(saveChanges.getBalance())
+                    .bank(saveChanges.getBank().getId())
                     .build();
         } catch (Exception e){
             System.err.printf("Exception caught: %s%n",e.getMessage());

@@ -32,6 +32,11 @@ public class Account {
     @JsonBackReference
     private User user;
 
+    @JoinColumn(referencedColumnName = "id",name = "bank_id")
+    @ManyToOne
+    @JsonBackReference
+    private Bank bank;
+
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
     @JsonManagedReference
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

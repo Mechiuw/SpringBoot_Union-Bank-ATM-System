@@ -53,7 +53,7 @@ public class ATMController {
                         .build()
         );
     }
-    @GetMapping(AppPath.PUT_BY_ID)
+    @PutMapping(AppPath.PUT_BY_ID)
     public ResponseEntity<?> update(@PathVariable String id,@RequestBody ATMRequest atmRequest){
         ATMResponse atmResponse = atmService.update(id,atmRequest);
         return ResponseEntity.status(HttpStatus.OK).body(
